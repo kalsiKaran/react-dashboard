@@ -1,0 +1,41 @@
+nav{
+    height: calc(100vh - 4rem);
+    margin: 2rem;
+    ul{
+        font-weight: 500;
+        padding: 2rem 0;
+        border-radius: 16px;
+        li{
+            margin-bottom: 2rem;
+            cursor: pointer;
+            width: 100%;
+            text-align: center;
+        }
+        li.link{
+            a{
+                display: block;
+                width: 100%;
+                opacity: 0.7;
+                border-right: 5px solid transparent;
+                cursor: pointer;
+                transition: all 0.3s;
+                &:hover, &.active{
+                    opacity: 1;
+                    border-right: 5px solid white;
+
+                }
+            }
+        }
+
+        .theme{
+            height: 32px;
+            width: 32px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s;
+        }
+
+    }
+}

@@ -1,0 +1,10 @@
+
+
+@mixin btn(){
+    border-radius: 4px;
+    padding: 0.2rem 0.6rem;
+}
+
+.btn-primary{
+    @include btn();
+}
