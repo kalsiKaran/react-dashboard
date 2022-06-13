@@ -25,13 +25,14 @@ function App() {
     <div className={currentMode === 'Dark' ? 'dark' : ''}>
       <BrowserRouter>
       <div className="App">
+        <div className='flex'>
         <Sidebar />
         <Routes>
           {/* dashboard  */}
           <Route path="/" element={(<Dashboard />)} />
           <Route path="/dashboard" element={(<Dashboard />)} />
-
         </Routes>
+        </div>
       </div>
       </BrowserRouter>
     </div>
