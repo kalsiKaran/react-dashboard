@@ -1,11 +1,5 @@
 @import './variables.scss';
 
-.p-datatable .p-datatable-tbody{
-    & > tr{
-        // background-color: transparent;
-    }
-}
-
 .table-row{
     border-bottom: 1px solid $gray-700;
     background-color: transparent !important;
