@@ -1,0 +1,40 @@
+@import './variables.scss';
+
+.p-datatable .p-datatable-tbody{
+    & > tr{
+        // background-color: transparent;
+    }
+}
+
+.table-row{
+    border-bottom: 1px solid $gray-700;
+    background-color: transparent !important;
+    &:last-child{
+        border-bottom: 0;
+    }
+    
+    td{
+        padding: 0.8rem 0;
+        font-size: 0.8rem;
+
+        img{
+            height: 50px;
+            border-radius: 4px;
+        }
+    }
+}
+.p-datatable-thead{
+    border-bottom: 2px solid $gray-700;
+    th{
+        padding: 0.5rem 0;
+        background-color: $zinc-800 !important;
+    }
+}
+.p-column-title{
+    font-weight: 500;
+    font-size: 0.9rem;
+}
+.p-sortable-column-icon{
+    margin-left: 0.3rem;
+    font-size: 0.7rem;
+}

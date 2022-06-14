@@ -4,6 +4,7 @@ import  { useStateContext } from './contexts/ContextProvider'
 import Sidebar from './components/Sidebar';
 import './styles/App.scss';
 import Dashboard from './components/Dashboard';
+import Table from './components/DataTable/Table';
 
 function App() {
   const { setCurrentMode, currentMode } = useStateContext();
@@ -25,12 +26,12 @@ function App() {
     <div className={currentMode === 'Dark' ? 'dark' : ''}>
       <BrowserRouter>
       <div className="App">
-        <div className='flex'>
+        <div className='flex routes-container'>
         <Sidebar />
         <Routes>
-          {/* dashboard  */}
           <Route path="/" element={(<Dashboard />)} />
           <Route path="/dashboard" element={(<Dashboard />)} />
+          <Route path="/data-table" element={(<Table />)} />
         </Routes>
         </div>
       </div>

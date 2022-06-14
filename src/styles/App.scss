@@ -1,5 +1,4 @@
-
-
+@import './variables.scss';
 @mixin btn(){
     border-radius: 4px;
     padding: 0.2rem 0.6rem;
@@ -7,4 +6,19 @@
 
 .btn-primary{
     @include btn();
+}
+
+.btn-outline-primary{
+    @include btn();
+}
+
+::-webkit-scrollbar{
+    width: 6px;
+}
+::-webkit-scrollbar-thumb{
+    background-color: $gray-700;
+    border-radius: 10px;
+    &:hover{
+        background-color: $gray-600;
+    }
 }
