@@ -4,10 +4,16 @@
     border-radius: 16px;
     
     .dashboard-container{
-        height: calc(100vh - 80px);
+        height: calc(100vh - 60px - 4rem);
+
         .pandl, .charges, .other-credits{
             width: 100%;
-            margin-right: 2rem;
-        }   
+            margin-right: 1rem;
+        }
+
+        .chart{
+            margin-right: 1rem;
+            height: calc(100vh - 136px - 60px - 5rem);
+        }
     }
 }

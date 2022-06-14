@@ -2,8 +2,10 @@ import React from 'react'
 
 function Charts() {
   return (
-    <div className='chart col-span-3 primary-box'>
-      Charts
+    <div className='chart'>
+      <div className='col-span-3 primary-box w-full h-full'>
+        Charts
+      </div>
     </div>
   )
 }

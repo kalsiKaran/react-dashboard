@@ -5,7 +5,7 @@ function ChargesandTaxes() {
     <div className='charges primary-box h-[8rem]'>
       <p>Lorem ipsum doler</p>
       <span>&#8377;3453</span>
-      <i class="fa-solid fa-money-bill-1 float-right"></i>
+      <i className="fa-solid fa-money-bill-1 float-right"></i>
     </div>
   )
 }
