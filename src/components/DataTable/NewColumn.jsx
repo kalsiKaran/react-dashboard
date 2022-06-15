@@ -5,7 +5,6 @@ import { Calendar } from 'primereact/calendar';
 import { Tag } from 'primereact/tag';
 import { Button } from 'primereact/button';
 
-import { Toast } from 'primereact/toast';
 import { FileUpload } from 'primereact/fileupload';
 import { ProgressBar } from 'primereact/progressbar';
 import firebase from '../../data/firebase'
