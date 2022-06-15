@@ -6,7 +6,7 @@ import ChargesandTaxes from './ChargesandTaxes';
 import OtherCredits from './OtherCredits';
 import WinsAndLosses from './WinsAndLosses';
 import RecentTrades from './RecentTrades';
-import Charts from './Charts';
+import DashboardChart from './DashboardChart';
 
 function Dashboard() {
   return (
@@ -20,7 +20,7 @@ function Dashboard() {
               <ChargesandTaxes />
               <OtherCredits />
             </div>
-            <Charts />
+            <DashboardChart />
           </div>
           <div className='w-3/12'>
             <div className="flex flex-col h-full">

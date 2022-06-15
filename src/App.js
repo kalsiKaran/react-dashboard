@@ -5,6 +5,7 @@ import Sidebar from './components/Sidebar';
 import './styles/App.scss';
 import Dashboard from './components/Dashboard';
 import Table from './components/DataTable/Table';
+import Charts from './components/Charts/Charts';
 
 function App() {
   const { setCurrentMode, currentMode } = useStateContext();
@@ -31,6 +32,7 @@ function App() {
         <Routes>
           <Route path="/" element={(<Dashboard />)} />
           <Route path="/dashboard" element={(<Dashboard />)} />
+          <Route path="/chart" element={(<Charts />)} />
           <Route path="/data-table" element={(<Table />)} />
         </Routes>
         </div>

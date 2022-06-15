@@ -1,14 +1,14 @@
 import React, { useState } from 'react';
 import { Chart } from 'primereact/chart';
 
-const Charts = () => {
+const DashboardChart = () => {
     const [basicData] = useState({
         labels: ['Jan', 'Feb', 'March', 'April', 'May', 'June', 'July', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
         datasets: [
             {
                 label: 'My First dataset',
                 backgroundColor: '#42A5F5',
-                data: [0, 12, 14, 30, 40, 20, 80, 75, 60, 90, 90, 100],
+                data: [20, 12, 14, 30, 40, 20, 80, 75, 60, 90, 90, 100],
                 borderColor: '#42A5F5',
                 tension: .4,
             },
@@ -67,14 +67,14 @@ const Charts = () => {
       <div className="card">
           <h5>Multi Axis</h5>
           <Chart type="bar" data={multiAxisData} options={multiAxisOptions} />
-      </div>
+      </div> */}
 
-      <div className="card">
+      {/* <div className="card">
           <h5>Stacked</h5>
-          <Chart type="bar" data={stackedData} options={stackedOptions} />
+          <Chart type="bar" data={basicData} options={basicOptions} />
       </div> */}
     </div>
     )
 }
 
-export default Charts
+export default DashboardChart

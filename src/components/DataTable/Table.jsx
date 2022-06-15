@@ -27,7 +27,8 @@ function Table() {
     const renderFooter = (name) => {
         return (
             <div>
-                <button className="btn btn-primary border-solid border-2 border-red-500 hover:bg-red-500 transition-all">Cancel</button>
+                <button className="btn btn-primary border-solid border-2 border-red-500 hover:bg-red-500 transition-all" onClick={() => setDisplayBasic(false)}>Cancel</button>
+                <button className="btn btn-primary border-solid border-2 border-blue-500 bg-blue-500 hover:bg-blue-600 transition-all" onClick={() => setDisplayBasic(false)}>Add</button>
             </div>
         );
     }
@@ -39,9 +40,10 @@ function Table() {
             <button className='btn-outline-primary border-solid border-2 border-blue-500  hover:bg-blue-500 transition-all' onClick={() => setDisplayBasic(true)}><i className="fas fa-add mr-2"></i>Add New</button>
         </div>
 
-                <Dialog header="Add New" visible={displayBasic} style={{ width: '70vw' }} draggable={false} footer={renderFooter('displayBasic')} onHide={() => setDisplayBasic(false)}>
-                    <NewColumn />
-                </Dialog>
+        <Dialog header="Add New" visible={displayBasic} style={{ width: '50vw' }} draggable={false} footer={renderFooter('displayBasic')} onHide={() => setDisplayBasic(false)}>
+            <NewColumn />
+        </Dialog>
+
         <div className='mt-8'>
             <DataTable value={products} rowClassName='table-row' responsiveLayout="stack" breakpoint="960px" scrollHeight="570px" scrollable>
                 <Column field="code" header="Code" sortable/>
