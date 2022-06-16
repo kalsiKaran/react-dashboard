@@ -1,4 +1,4 @@
-import React, {useState, useRef} from 'react'
+import React, {useState, useRef, useEffect} from 'react'
 import { InputText } from 'primereact/inputtext';
 import { InputNumber } from 'primereact/inputnumber';
 import { Calendar } from 'primereact/calendar';
@@ -7,12 +7,14 @@ import { Button } from 'primereact/button';
 
 import { FileUpload } from 'primereact/fileupload';
 import { ProgressBar } from 'primereact/progressbar';
-import firebase from '../../data/firebase'
+import db from '../../data/firebase';
+import { collection, addDoc, getDocs, doc } from "firebase/firestore";
+import { updateDoc } from 'firebase/firestore/lite';
+
 
 
 function NewColumn() {
 
-  const ref = firebase.firestore().collection("trade")
 
   const [value, setValue] = useState('');
   const [numberValue, setNumberValue] = useState();
@@ -95,12 +97,59 @@ function NewColumn() {
   const uploadOptions = {icon: 'pi pi-fw pi-cloud-upload', iconOnly: true, className: 'custom-upload-btn p-button-success p-button-rounded p-button-outlined'};
   const cancelOptions = {icon: 'pi pi-fw pi-times', iconOnly: true, className: 'custom-cancel-btn p-button-danger p-button-rounded p-button-outlined'};
 
+  const usercollection = collection(db, "customersData")
 
+  const [data, setData] = useState([])
+  const [customerName, setCustomerName] = useState("");
+  const [customerAge, setCustomerAge] = useState("");
+  
+  const updateAge = async(id, age)=>{
+    const userDoc = doc(db, "customersData", id);
+    const newFields = {age: age + 1};
+    await updateDoc(userDoc, newFields);
+
+  }
+  const submit = async () => {
+    await addDoc(usercollection, {name: customerName, age: Number(customerAge)})
+  };
+
+  useEffect(() =>{
+    const getData = async () => {
+      const data = await getDocs(usercollection);
+      setData(data.docs.map((doc)=>({...doc.data(), id: doc.id})));
+    }
+
+    getData();
+  }, [])
 
   return (
     <div className='w-full'>
 
-      {console.log(ref)}
+<div className="App__form">
+        <input
+          type="text"
+          placeholder="Name"
+          value={customerName}
+          onChange={(e) => setCustomerName(e.target.value)}
+        />
+        <input
+          type="text"
+          placeholder="Age"
+          value={customerAge}
+          onChange={(e) => setCustomerAge(e.target.value)}
+        />
+        <button onClick={submit}>Submit</button>
+      </div>
+
+      {data.map((e)=>{
+        return <div key={e.id}>
+          <p>name: {e.name}</p>
+          <p>Age: {e.age}</p>
+          <button onClick={() => updateAge(e.id, e.age)}>increment</button>
+        </div>
+      })}
+
+
       <div className="flex pt-5">
         <span className="p-float-label w-full mr-4">
           <InputText id="in" value={value} onChange={(e) => setValue(e.target.value)} className="w-full" />
