@@ -9,7 +9,7 @@ import { FileUpload } from 'primereact/fileupload';
 import { ProgressBar } from 'primereact/progressbar';
 import db from '../../data/firebase';
 import { collection, addDoc, getDocs, doc } from "firebase/firestore";
-import { updateDoc } from 'firebase/firestore/lite';
+import { deleteDoc, updateDoc } from 'firebase/firestore/lite';
 
 
 
@@ -107,8 +107,13 @@ function NewColumn() {
     const userDoc = doc(db, "customersData", id);
     const newFields = {age: age + 1};
     await updateDoc(userDoc, newFields);
-
   }
+
+  const deleteData = async(id)=>{
+    const userDoc = doc(db, "customersData", id);
+    await deleteDoc(userDoc)
+  }
+
   const submit = async () => {
     await addDoc(usercollection, {name: customerName, age: Number(customerAge)})
   };
@@ -146,6 +151,7 @@ function NewColumn() {
           <p>name: {e.name}</p>
           <p>Age: {e.age}</p>
           <button onClick={() => updateAge(e.id, e.age)}>increment</button>
+          <button onClick={() => deleteData(e.id)}>delete</button>
         </div>
       })}
 
