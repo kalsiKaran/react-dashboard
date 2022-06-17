@@ -45,7 +45,7 @@ function Table() {
       }, [data])
 
     const editDataRow = (e) =>{
-        setRowId(e.id)
+        setRowId(e)
         setShowDialog(true);
         setDataStatus('update')
     }
@@ -84,7 +84,7 @@ function Table() {
         </div>
 
         {/* dialog for add new row */}
-        <Dialog header="Add New" visible={showDialog} style={{ width: '50vw' }} draggable={false} footer={renderFooter('displayBasic')} onHide={() => setShowDialog(false)}>
+        <Dialog header={dataStatus === 'add' ? 'Add New' : 'Update Columns'} visible={showDialog} style={{ width: '50vw' }} draggable={false} footer={renderFooter('displayBasic')} onHide={() => setShowDialog(false)}>
             <NewColumn ref={childRef}/>
         </Dialog>
 
@@ -93,7 +93,7 @@ function Table() {
 
         {/* data table */}
         <div className='mt-8'>
-            <DataTable value={data} rowClassName='table-row' responsiveLayout="stack" breakpoint="960px" scrollHeight="570px" scrollable contextMenuSelection={data.id} onContextMenuSelectionChange={e => setSelectedDataRow(e.value)} onContextMenu={e => cm.current.show(e.originalEvent)} >
+            <DataTable value={data} rowClassName='table-row' responsiveLayout="stack" breakpoint="960px" scrollHeight="570px" scrollable contextMenuSelection={data} onContextMenuSelectionChange={e => setSelectedDataRow(e.value)} onContextMenu={e => cm.current.show(e.originalEvent)} >
 
                 <Column field="id" header="ID" sortable/>
                 <Column field="symbol" header="Symbol" sortable/>

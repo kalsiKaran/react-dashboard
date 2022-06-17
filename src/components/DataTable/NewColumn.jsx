@@ -111,7 +111,7 @@ const NewColumn = forwardRef((props, ref) => {
       if(e === 'add'){
         addRow();
       }else{
-        updateRow(rowId)
+        updateRow(rowId.id)
       }
     }
   }))
