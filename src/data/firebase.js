@@ -2,12 +2,12 @@ import { initializeApp } from 'firebase/app';
 import { getFirestore } from 'firebase/firestore/lite';
 
 const firebaseConfig = {
-    apiKey: "AIzaSyB4Zoz01yQAmLDfmYFfGXU0TBawC2vdh8Y",
-    authDomain: "react-dashboard-5f925.firebaseapp.com",
-    projectId: "react-dashboard-5f925",
-    storageBucket: "react-dashboard-5f925.appspot.com",
-    messagingSenderId: "338238730367",
-    appId: "1:338238730367:web:8f6e3490a47547b6590f4a"
+    apiKey: "AIzaSyAvTFc7uVGPPdGeipFxoe0EuFFQA6mUzfY",
+    authDomain: "react-dashboard-dd469.firebaseapp.com",
+    projectId: "react-dashboard-dd469",
+    storageBucket: "react-dashboard-dd469.appspot.com",
+    messagingSenderId: "172130280838",
+    appId: "1:172130280838:web:a60005e66cc1b16ae83807"
   };
 
   const firebaseApp = initializeApp(firebaseConfig);
