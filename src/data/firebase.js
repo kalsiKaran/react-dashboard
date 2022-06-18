@@ -1,6 +1,7 @@
 import { initializeApp } from 'firebase/app';
 import { getFirestore } from 'firebase/firestore/lite';
-
+import { getStorage } from 'firebase/storage'
+ 
 const firebaseConfig = {
     apiKey: "AIzaSyAvTFc7uVGPPdGeipFxoe0EuFFQA6mUzfY",
     authDomain: "react-dashboard-dd469.firebaseapp.com",
@@ -13,6 +14,5 @@ const firebaseConfig = {
   const firebaseApp = initializeApp(firebaseConfig);
   const db = getFirestore(firebaseApp);
     
+  export const storage = getStorage(firebaseApp)
   export default db;
-
-  // export default firebase;

@@ -1,4 +1,5 @@
 @import './variables.scss';
+
 @mixin btn(){
     border-radius: 4px;
     padding: 0.2rem 0.6rem;
@@ -12,9 +13,29 @@
     @include btn();
 }
 
+input:-webkit-autofill,
+input:-webkit-autofill:hover, 
+input:-webkit-autofill:focus,
+textarea:-webkit-autofill,
+textarea:-webkit-autofill:hover,
+textarea:-webkit-autofill:focus,
+select:-webkit-autofill,
+select:-webkit-autofill:hover,
+select:-webkit-autofill:focus {
+  -webkit-text-fill-color: $white;
+  caret-color: $white;
+  box-shadow: 0 0 0px 1000px $gray-800 inset;
+  transition: background-color 5000s ease-in-out 0s;
+}
+
+.p-float-label input:focus ~ label, .p-float-label input.p-filled ~ label, .p-float-label textarea:focus ~ label, .p-float-label textarea.p-filled ~ label, .p-float-label .p-inputwrapper-focus ~ label, .p-float-label .p-inputwrapper-filled ~ label{
+    background-color: $gray-800 !important;
+}
+
 ::-webkit-scrollbar{
     width: 6px;
 }
+
 ::-webkit-scrollbar-thumb{
     background-color: $gray-700;
     border-radius: 10px;

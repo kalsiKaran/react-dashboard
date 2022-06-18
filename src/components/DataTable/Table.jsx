@@ -10,17 +10,16 @@ import { ContextMenu } from 'primereact/contextmenu';
 import '../../styles/tables.scss';
 import NewColumn from './NewColumn';
 import db from '../../data/firebase';
-import { collection, getDocs, doc } from "firebase/firestore";
+import { collection, getDocs, doc, query, onSnapshot } from "firebase/firestore";
 import { deleteDoc, updateDoc } from 'firebase/firestore/lite';
 import { useStateContext } from '../../contexts/ContextProvider';
 
 
 function Table() {
 
-    const { showDialog, setShowDialog, dataStatus, setDataStatus, setRowId } = useStateContext();
+    const { showDialog, setShowDialog, dataStatus, setDataStatus, setRowData, loading, setLoading } = useStateContext();
 
     const usercollection = collection(db, "tradeData")
-
     const [data, setData] = useState([]);
     const [selectedDataRow, setSelectedDataRow] = useState(null);
     const cm = useRef(null);
@@ -31,6 +30,16 @@ function Table() {
     ];
 
     const childRef = useRef(null);
+//     useEffect(() =>{
+//         const getData = async () => {
+//         const querySnapshot = await getDocs(usercollection);
+//         querySnapshot.forEach((doc) => {
+//         // doc.data() is never undefined for query doc snapshots
+//         console.log(doc.id, " => ", doc.data());
+//         });
+//     }
+//     return () => getData();
+// }, [loading])
 
     useEffect(() =>{
         getDocs(usercollection)
@@ -38,21 +47,27 @@ function Table() {
             const data = res.docs.map(doc => ({
                 ...doc.data(),
                 id: doc.id,
+                buyDate: doc.data().buyDate.toDate(),
+                sellDate: doc.data().sellDate.toDate(),
             }))
+            setLoading(false)
             setData(data)
+            console.log('data', data);
         })
         .catch(err => console.log(err))
-      }, [data])
+      }, [loading])
 
     const editDataRow = (e) =>{
-        setRowId(e)
+        setRowData(e)
         setShowDialog(true);
         setDataStatus('update')
     }
 
     const deleteDataRow = async(e)=>{
+        setLoading(true);
         const userDoc = doc(db, "tradeData", e.id);
-        await deleteDoc(userDoc)
+        await deleteDoc(userDoc);
+        setLoading(false)
     }
 
     const addNew = ()=>{
@@ -60,9 +75,22 @@ function Table() {
         setDataStatus('add');
     }
 
-    // const statusTemplate = (rowData) => {
-    //     return <span className={`product-badge status-${(rowData.inventoryStatus ? rowData.inventoryStatus.toLowerCase() : '')}`}>{rowData.inventoryStatus}</span>;
-    // }
+    const formatDate = (value) => {
+        return value.toLocaleDateString('en-US', {
+            day: '2-digit',
+            month: '2-digit',
+            year: 'numeric',
+        });
+    }
+
+    const dateBodyTemplate = (rowData) => {
+        return formatDate(rowData);
+    }
+
+    const statusTemplate = (rowData) => {
+        return <span className={`py-1 px-2 rounded text-xs bg-${(rowData.buyValue > rowData.sellValue ? 'rose' : 'teal')}-600`}>{(rowData.buyValue > rowData.sellValue ? 'Failure' : 'Success')}</span>;
+    }
+
     // const imageBodyTemplate = (rowData) => {
     //     return <img src={`/assets/${rowData.image}`} onError={(e) => e.target.src='https://www.primefaces.org/wp-content/uploads/2020/05/placeholder.png'} alt={rowData.image} className="product-image" />;
     // }
@@ -84,7 +112,15 @@ function Table() {
         </div>
 
         {/* dialog for add new row */}
-        <Dialog header={dataStatus === 'add' ? 'Add New' : 'Update Columns'} visible={showDialog} style={{ width: '50vw' }} draggable={false} footer={renderFooter('displayBasic')} onHide={() => setShowDialog(false)}>
+        <Dialog header={dataStatus === 'add' ? 'Add New' : 'Update Columns'}
+            visible={showDialog}
+            style={{width: '50vw'}}
+            breakpoints={{'960px':'75vw', '640px': '100vw'}}
+            draggable={false}
+            footer={renderFooter('displayBasic')} 
+            onHide={() => setShowDialog(false)}
+            dismissableMask={true} 
+            >
             <NewColumn ref={childRef}/>
         </Dialog>
 
@@ -93,14 +129,19 @@ function Table() {
 
         {/* data table */}
         <div className='mt-8'>
-            <DataTable value={data} rowClassName='table-row' responsiveLayout="stack" breakpoint="960px" scrollHeight="570px" scrollable contextMenuSelection={data} onContextMenuSelectionChange={e => setSelectedDataRow(e.value)} onContextMenu={e => cm.current.show(e.originalEvent)} >
+            <DataTable value={data} rowClassName='table-row' responsiveLayout="stack" breakpoint="1080px" scrollHeight="570px" style={{overflow: 'hidden auto'}} contextMenuSelection={data} onContextMenuSelectionChange={e => setSelectedDataRow(e.value)} onContextMenu={e => cm.current.show(e.originalEvent)} >
 
-                <Column field="id" header="ID" sortable/>
-                <Column field="symbol" header="Symbol" sortable/>
+                {/* <Column field="id" header="ID" sortable/> */}
+                <Column field="symbol" header="Name" sortable/>
                 {/* <Column header="Image" body={imageBodyTemplate}></Column> */}
                 <Column field="type" header="Type" sortable/>
                 <Column field="quantity" header="Quantity" sortable/>
-                {/* <Column field="inventoryStatus" header="Status" body={statusTemplate} sortable/> */}
+                <Column field="buyValue" header="value1" sortable/>
+                <Column field="sellValue" header="value2" sortable/>
+                <Column field="buyDate" header="Date1" dataType="date" 
+                body={e => dateBodyTemplate(e.buyDate)} sortable/>
+                <Column field="sellDate" header="Date2" dataType="date" body={e => dateBodyTemplate(e.sellDate)} sortable/>
+                <Column field="status" header="Status" body={statusTemplate} sortable/>
             </DataTable>
         </div>
     </div>

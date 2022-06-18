@@ -8,14 +8,16 @@ import { Calendar } from 'primereact/calendar';
 // import { FileUpload } from 'primereact/fileupload';
 // import { ProgressBar } from 'primereact/progressbar';
 import db from '../../data/firebase';
-import { collection, addDoc, getDocs, doc } from "firebase/firestore";
-import { deleteDoc, updateDoc } from 'firebase/firestore/lite';
+import storage from '../../data/firebase';
+import { collection, addDoc, doc } from "firebase/firestore";
+import { updateDoc } from 'firebase/firestore/lite';
+import { ref as storageRef, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { useStateContext } from '../../contexts/ContextProvider';
 
 
 const NewColumn = forwardRef((props, ref) => {
   
-  const { setShowDialog, rowId } = useStateContext();
+  const { setShowDialog, rowData, dataStatus, loading, setLoading } = useStateContext();
 
   // const [totalSize, setTotalSize] = useState(0);
   // const toast = useRef(null);
@@ -97,7 +99,6 @@ const NewColumn = forwardRef((props, ref) => {
 
   const usercollection = collection(db, "tradeData")
 
-  const [data, setData] = useState([])
   const [symbol, setSymbol] = useState("");
   const [type, setType] = useState("");
   const [quantity, setQuantity] = useState();
@@ -105,18 +106,35 @@ const NewColumn = forwardRef((props, ref) => {
   const [sellValue, setSellValue] = useState();
   const [buyDate, setBuyDate] = useState(null);
   const [sellDate, setSellDate] = useState(null);
+  const [image, setImage] = useState(null)
+  const [url, setUrl] = useState(null)
+
+
+  useEffect(() =>{
+      if(dataStatus === 'update' && rowData){
+        setSymbol(rowData.symbol);
+        setType(rowData.type);
+        setQuantity(rowData.quantity);
+        setBuyValue(rowData.buyValue);
+        setSellValue(rowData.sellValue);
+        setBuyDate(rowData.buyDate);
+        setSellDate(rowData.sellDate);
+      }
+    }, [])
 
   useImperativeHandle(ref, () => ({
     callChildFunction(e){
       if(e === 'add'){
         addRow();
       }else{
-        updateRow(rowId.id)
+        updateRow(rowData)
       }
     }
   }))
 
   const addRow = async () => {
+    setLoading(true)
+    setShowDialog(false);
     await addDoc(usercollection, {
       symbol: symbol,
       type: type,
@@ -126,7 +144,7 @@ const NewColumn = forwardRef((props, ref) => {
       buyDate: buyDate,
       sellDate: sellDate,
     })
-    setShowDialog(false);
+    setLoading(false)
   };
 
   // useEffect(() =>{
@@ -139,8 +157,10 @@ const NewColumn = forwardRef((props, ref) => {
   // }, [])
 
 
-  const updateRow = async(rowId)=>{
-    const userDoc = doc(db, "tradeData", rowId);
+  const updateRow = async(rowData)=>{
+    setShowDialog(false);
+    setLoading(true)
+    const userDoc = doc(db, "tradeData", rowData.id);
     const updateRowData = {
       symbol: symbol,
       type: type,
@@ -151,9 +171,32 @@ const NewColumn = forwardRef((props, ref) => {
       sellDate: sellDate,
     };
     await updateDoc(userDoc, updateRowData);
-    setShowDialog(false);
+    setLoading(false)
   }
 
+
+  const handleImageChange = (e) => {
+    if(e.target.files[0]){
+      setImage(e.target.files[0]);
+    }
+  }
+
+  const handleSubmit = () => {
+    const imageRef = storageRef(storage, "image");
+    uploadBytes(imageRef, image)
+    .then(() => {
+      getDownloadURL(imageRef)
+      .then((url) => {
+          setUrl(url);
+      })
+      .catch((error) => {
+        console.log(error.message, "error message");
+      })
+    })
+    .catch((error) => {
+      console.log(error.message);
+    })
+  }
   // const deleteData = async(id)=>{
   //   const userDoc = doc(db, "tradeData", id);
   //   await deleteDoc(userDoc)
@@ -162,7 +205,9 @@ const NewColumn = forwardRef((props, ref) => {
   return (
     <div className='w-full'>
 
-
+    <input type="file" onChange={handleImageChange} />
+    <button type="submit" onClick={handleSubmit}>submit</button>
+    <img src={url} alt="" />
       <div className="flex pt-5">
         <span className="p-float-label w-full mr-4">
           <InputText id="in" value={symbol} onChange={(e) => setSymbol(e.target.value)} className="w-full" />
@@ -182,23 +227,23 @@ const NewColumn = forwardRef((props, ref) => {
 
         <span className="p-float-label w-full mr-4">
           <InputNumber id="in" mode="decimal" minFractionDigits={0} maxFractionDigits={3} className="w-full" value={buyValue} onChange={(e) => setBuyValue(e.value)} />
-          <label htmlFor="in">Buy Value</label>
+          <label htmlFor="in">Value 1</label>
         </span>
 
         <span className="p-float-label w-full">
           <InputNumber id="in" minFractionDigits={0} maxFractionDigits={3} className="w-full" value={sellValue} onChange={(e) => setSellValue(e.value)} />
-          <label htmlFor="in">Sell Value</label>
+          <label htmlFor="in">Value 2</label>
         </span>
 
       </div>
       <div className="flex pt-5">
         <span className="p-float-label w-full mr-4">
-          <Calendar value={buyDate} onChange={(e) => setBuyDate(e.value)} className="w-full"></Calendar>
-          <label htmlFor="in">Buy Date</label>
+          <Calendar value={buyDate} dateFormat="dd/mm/yy" onChange={(e) => setBuyDate(e.value)} className="w-full"></Calendar>
+          <label htmlFor="in">start Date</label>
         </span>
         <span className="p-float-label w-full">
-          <Calendar value={sellDate} onChange={(e) => setSellDate(e.value)} className="w-full"></Calendar>
-          <label htmlFor="in">Sell Date</label>
+          <Calendar value={sellDate} dateFormat="dd/mm/yy" onChange={(e) => setSellDate(e.value)} className="w-full"></Calendar>
+          <label htmlFor="in">end Date</label>
         </span>
 
       </div>
