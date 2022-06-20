@@ -1,103 +1,32 @@
-import React, {useState, useEffect, forwardRef, useImperativeHandle} from 'react'
+import React, {useState, useEffect, forwardRef, useRef, useImperativeHandle} from 'react'
 import { InputText } from 'primereact/inputtext';
 import { InputNumber } from 'primereact/inputnumber';
 import { Calendar } from 'primereact/calendar';
-// import { Tag } from 'primereact/tag';
-// import { Button } from 'primereact/button';
+import { Tag } from 'primereact/tag';
+import { Button } from 'primereact/button';
 
-// import { FileUpload } from 'primereact/fileupload';
-// import { ProgressBar } from 'primereact/progressbar';
-import db from '../../data/firebase';
-import storage from '../../data/firebase';
-import { collection, addDoc, doc } from "firebase/firestore";
+import { FileUpload } from 'primereact/fileupload';
+import { ProgressBar } from 'primereact/progressbar';
+import { db, storage } from '../../data/firebase';
+import {
+  addDoc,
+  collection,
+  doc,
+  serverTimestamp,
+  setDoc,
+} from "firebase/firestore";
 import { updateDoc } from 'firebase/firestore/lite';
-import { ref as storageRef, uploadBytes, getDownloadURL } from 'firebase/storage';
+import { ref as imageRef, uploadBytesResumable, getDownloadURL } from "firebase/storage";
 import { useStateContext } from '../../contexts/ContextProvider';
 
 
 const NewColumn = forwardRef((props, ref) => {
   
-  const { setShowDialog, rowData, dataStatus, loading, setLoading } = useStateContext();
-
-  // const [totalSize, setTotalSize] = useState(0);
-  // const toast = useRef(null);
-  // const fileUploadRef = useRef(null);
-
-//   const onTemplateUpload = (e) => {
-//     let _totalSize = 0;
-//     e.files.forEach(file => {
-//         _totalSize += (file.size || 0);
-//     });
-
-//     setTotalSize(_totalSize);
-//     toast.current.show({severity: 'info', summary: 'Success', detail: 'File Uploaded'});
-//   }
-
-//   const onTemplateSelect = (e) => {
-//     let _totalSize = totalSize;
-//     e.files.forEach(file => {
-//         _totalSize += file.size;
-//     });
-
-//     setTotalSize(_totalSize);
-//   }
-
-//   const onTemplateClear = () => {
-//     setTotalSize(0);
-//   }
-
-//   const onTemplateRemove = (file, callback) => {
-//     setTotalSize(totalSize - file.size);
-//     callback();
-// }
-
-//   const headerTemplate = (options) => {
-//     const { className, chooseButton, uploadButton, cancelButton } = options;
-//     const value = totalSize/10000;
-//     const formatedValue = fileUploadRef && fileUploadRef.current ? fileUploadRef.current.formatSize(totalSize) : '0 B';
-
-//     return (
-//         <div className={className} style={{backgroundColor: 'transparent', display: 'flex', alignItems: 'center'}}>
-//             {chooseButton}
-//             {uploadButton}
-//             {cancelButton}
-//             <ProgressBar value={value} displayValueTemplate={() => `${formatedValue} / 1 MB`} style={{width: '300px', height: '20px', marginLeft: 'auto'}}></ProgressBar>
-//         </div>
-//     );
-//   }
-
-//   const itemTemplate = (file, props) => {
-//     return (
-//         <div className="flex align-items-center flex-wrap">
-//             <div className="flex align-items-center" style={{width: '40%'}}>
-//                 <img alt={file.name} role="presentation" src={file.objectURL} width={100} />
-//                 <span className="flex flex-column text-left ml-3">
-//                     {file.name}
-//                     <small>{new Date().toLocaleDateString()}</small>
-//                 </span>
-//             </div>
-//             <Tag value={props.formatSize} severity="warning" className="px-3 py-2" />
-//             <Button type="button" icon="pi pi-times" className="p-button-outlined p-button-rounded p-button-danger ml-auto" onClick={() => onTemplateRemove(file, props.onRemove)} />
-//         </div>
-//     )
-// }
-
-//   const emptyTemplate = () => {
-//     return (
-//         <div className="flex align-items-center flex-column">
-//             <i className="pi pi-image mt-3 p-5" style={{'fontSize': '5em', borderRadius: '50%', backgroundColor: 'var(--surface-b)', color: 'var(--surface-d)'}}></i>
-//             <span style={{'fontSize': '1.2em', color: 'var(--text-color-secondary)'}} className="my-5">Drag and Drop Image Here</span>
-//         </div>
-//     )
-//   }
-
-//   const chooseOptions = {icon: 'pi pi-fw pi-images', iconOnly: true, className: 'custom-choose-btn p-button-rounded p-button-outlined'};
-//   const uploadOptions = {icon: 'pi pi-fw pi-cloud-upload', iconOnly: true, className: 'custom-upload-btn p-button-success p-button-rounded p-button-outlined'};
-//   const cancelOptions = {icon: 'pi pi-fw pi-times', iconOnly: true, className: 'custom-cancel-btn p-button-danger p-button-rounded p-button-outlined'};
-
-
+  const { setShowDialog, rowData, dataStatus, setLoading } = useStateContext();
 
   const usercollection = collection(db, "tradeData")
+  const [file, setFile] = useState("");
+  const [per, setPerc] = useState(null);
 
   const [symbol, setSymbol] = useState("");
   const [type, setType] = useState("");
@@ -106,8 +35,7 @@ const NewColumn = forwardRef((props, ref) => {
   const [sellValue, setSellValue] = useState();
   const [buyDate, setBuyDate] = useState(null);
   const [sellDate, setSellDate] = useState(null);
-  const [image, setImage] = useState(null)
-  const [url, setUrl] = useState(null)
+  const [image, setImage] = useState({})
 
 
   useEffect(() =>{
@@ -119,8 +47,9 @@ const NewColumn = forwardRef((props, ref) => {
         setSellValue(rowData.sellValue);
         setBuyDate(rowData.buyDate);
         setSellDate(rowData.sellDate);
+        setImage(rowData.image)
       }
-    }, [])
+    }, [rowData, dataStatus])
 
   useImperativeHandle(ref, () => ({
     callChildFunction(e){
@@ -132,20 +61,42 @@ const NewColumn = forwardRef((props, ref) => {
     }
   }))
 
-  const addRow = async () => {
-    setLoading(true)
-    setShowDialog(false);
-    await addDoc(usercollection, {
-      symbol: symbol,
-      type: type,
-      quantity: Number(quantity),
-      buyValue: Number(buyValue),
-      sellValue: Number(sellValue),
-      buyDate: buyDate,
-      sellDate: sellDate,
-    })
-    setLoading(false)
-  };
+  const addRow = async (e) => {
+    try {
+      await setDoc(doc(usercollection), {
+        symbol: symbol,
+        type: type,
+        quantity: Number(quantity),
+        buyValue: Number(buyValue),
+        sellValue: Number(sellValue),
+        buyDate: buyDate,
+        sellDate: sellDate,
+        image: image.img,
+        timeStamp: serverTimestamp(),
+      });
+      setShowDialog(false);
+    } catch (err) {
+      console.log(err);
+    }
+
+    
+  }
+
+  // const addRow = async () => {
+  //   setLoading(true)
+  //   setShowDialog(false);
+  //   await addDoc(usercollection, {
+  //     symbol: symbol,
+  //     type: type,
+  //     quantity: Number(quantity),
+  //     buyValue: Number(buyValue),
+  //     sellValue: Number(sellValue),
+  //     buyDate: buyDate,
+  //     sellDate: sellDate,
+  //     image: image
+  //   })
+  //   setLoading(false)
+  // };
 
   // useEffect(() =>{
   //   const getData = async () => {
@@ -175,39 +126,53 @@ const NewColumn = forwardRef((props, ref) => {
   }
 
 
-  const handleImageChange = (e) => {
-    if(e.target.files[0]){
-      setImage(e.target.files[0]);
-    }
-  }
-
-  const handleSubmit = () => {
-    const imageRef = storageRef(storage, "image");
-    uploadBytes(imageRef, image)
-    .then(() => {
-      getDownloadURL(imageRef)
-      .then((url) => {
-          setUrl(url);
-      })
-      .catch((error) => {
-        console.log(error.message, "error message");
-      })
-    })
-    .catch((error) => {
-      console.log(error.message);
-    })
-  }
-  // const deleteData = async(id)=>{
-  //   const userDoc = doc(db, "tradeData", id);
-  //   await deleteDoc(userDoc)
+  // const handleImageChange = (e) => {
+  //   if(e.target.files[0]){
+  //     setImage(e.target.files[0]);
+  //   }
   // }
+
+  useEffect(() => {
+    const uploadFile = () => {
+      setImage(image)
+      const name = new Date().getTime() + file.name;
+
+      const storageRef = imageRef(storage, file.name);
+
+      const uploadTask = uploadBytesResumable(storageRef, file);
+
+      uploadTask.on(
+        "state_changed",
+        (snapshot) => {
+          const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+          console.log("Upload is " + progress + "% done");
+          setPerc(progress);
+          switch (snapshot.state) {
+            case "paused":
+              console.log("Upload is paused");
+              break;
+            case "running":
+              console.log("Upload is running");
+              break;
+            default:
+              break;
+          }
+        },
+        (error) => {
+          console.log(error);
+        },
+        () => {
+          getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
+            setImage(() => ({ img: downloadURL }));
+          });
+        }
+      );
+    };
+    file && uploadFile();
+  }, [file]);
 
   return (
     <div className='w-full'>
-
-    <input type="file" onChange={handleImageChange} />
-    <button type="submit" onClick={handleSubmit}>submit</button>
-    <img src={url} alt="" />
       <div className="flex pt-5">
         <span className="p-float-label w-full mr-4">
           <InputText id="in" value={symbol} onChange={(e) => setSymbol(e.target.value)} className="w-full" />
@@ -247,15 +212,16 @@ const NewColumn = forwardRef((props, ref) => {
         </span>
 
       </div>
-      {/* <div className="flex pt-5">
+      <div>
+
+      </div>
+      <div className="flex pt-5">
         <span className="p-float-label w-full">
-        <FileUpload ref={fileUploadRef} name="demo[]" url="https://primefaces.org/primereact/showcase/upload.php" multiple accept="image/*" maxFileSize={1000000}
-                    onUpload={onTemplateUpload} onSelect={onTemplateSelect} onError={onTemplateClear} onClear={onTemplateClear}
-                    headerTemplate={headerTemplate} itemTemplate={itemTemplate} emptyTemplate={emptyTemplate}
-                    chooseOptions={chooseOptions} uploadOptions={uploadOptions} cancelOptions={cancelOptions} />
+        <input type="file" onChange={(e) => setFile(e.target.files[0])} />
+        <img src={ image } alt="" />
         </span>
 
-      </div> */}
+      </div>
     </div>
   )
 })

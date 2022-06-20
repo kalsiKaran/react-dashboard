@@ -9,7 +9,7 @@ import { ContextMenu } from 'primereact/contextmenu';
 
 import '../../styles/tables.scss';
 import NewColumn from './NewColumn';
-import db from '../../data/firebase';
+import { db } from '../../data/firebase';
 import { collection, getDocs, doc, query, onSnapshot } from "firebase/firestore";
 import { deleteDoc, updateDoc } from 'firebase/firestore/lite';
 import { useStateContext } from '../../contexts/ContextProvider';
@@ -41,21 +41,48 @@ function Table() {
 //     return () => getData();
 // }, [loading])
 
-    useEffect(() =>{
-        getDocs(usercollection)
-        .then(res => {
-            const data = res.docs.map(doc => ({
-                ...doc.data(),
-                id: doc.id,
-                buyDate: doc.data().buyDate.toDate(),
-                sellDate: doc.data().sellDate.toDate(),
-            }))
-            setLoading(false)
-            setData(data)
-            console.log('data', data);
-        })
-        .catch(err => console.log(err))
-      }, [loading])
+useEffect(() => {
+
+    // LISTEN (REALTIME)
+    const unsub = onSnapshot(
+      usercollection,
+      (snapShot) => {
+        let list = [];
+        snapShot.docs.forEach((doc) => {
+          list.push({ id: doc.id,
+                        ...doc.data(),
+                        buyDate: doc.data().buyDate.toDate(),
+                        sellDate: doc.data().sellDate.toDate(),
+             });
+        });
+        setData(list);
+        console.log(data);
+      },
+      (error) => {
+        console.log(error);
+      }
+    );
+
+    return () => {
+      unsub();
+    };
+  }, []);
+
+    // useEffect(() =>{
+    //     getDocs(usercollection)
+    //     .then(res => {
+    //         const data = res.docs.map(doc => ({
+    //             ...doc.data(),
+    //             id: doc.id,
+    //             buyDate: doc.data().buyDate.toDate(),
+    //             sellDate: doc.data().sellDate.toDate(),
+    //         }))
+    //         setLoading(false)
+    //         setData(data)
+    //         console.log('data', data);
+    //     })
+    //     .catch(err => console.log(err))
+    //   }, [loading])
 
     const editDataRow = (e) =>{
         setRowData(e)
@@ -91,9 +118,9 @@ function Table() {
         return <span className={`py-1 px-2 rounded text-xs bg-${(rowData.buyValue > rowData.sellValue ? 'rose' : 'teal')}-600`}>{(rowData.buyValue > rowData.sellValue ? 'Failure' : 'Success')}</span>;
     }
 
-    // const imageBodyTemplate = (rowData) => {
-    //     return <img src={`/assets/${rowData.image}`} onError={(e) => e.target.src='https://www.primefaces.org/wp-content/uploads/2020/05/placeholder.png'} alt={rowData.image} className="product-image" />;
-    // }
+    const imageBodyTemplate = (rowData) => {
+        return <img src={`${rowData.image}`} onError={(e) => e.target.src='https://www.primefaces.org/wp-content/uploads/2020/05/placeholder.png'} alt={rowData.image} className="product-image" />
+    }
     
     const renderFooter = () => {
         return (
@@ -141,6 +168,7 @@ function Table() {
                 <Column field="buyDate" header="Date1" dataType="date" 
                 body={e => dateBodyTemplate(e.buyDate)} sortable/>
                 <Column field="sellDate" header="Date2" dataType="date" body={e => dateBodyTemplate(e.sellDate)} sortable/>
+                <Column field="image" header="Image" body={imageBodyTemplate} />
                 <Column field="status" header="Status" body={statusTemplate} sortable/>
             </DataTable>
         </div>
