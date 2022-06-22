@@ -38,6 +38,7 @@ const NewColumn = forwardRef((props, ref) => {
   const [image, setImage] = useState({})
 
 
+  // set row data to input fields if updating 
   useEffect(() =>{
       if(dataStatus === 'update' && rowData){
         setSymbol(rowData.symbol);
@@ -51,6 +52,8 @@ const NewColumn = forwardRef((props, ref) => {
       }
     }, [rowData, dataStatus])
 
+
+  // calling child function using forward ref 
   useImperativeHandle(ref, () => ({
     callChildFunction(e){
       if(e === 'add'){
@@ -61,6 +64,7 @@ const NewColumn = forwardRef((props, ref) => {
     }
   }))
 
+  // function for adding new row 
   const addRow = async (e) => {
     try {
       await setDoc(doc(usercollection), {
@@ -78,36 +82,9 @@ const NewColumn = forwardRef((props, ref) => {
     } catch (err) {
       console.log(err);
     }
-
-    
   }
 
-  // const addRow = async () => {
-  //   setLoading(true)
-  //   setShowDialog(false);
-  //   await addDoc(usercollection, {
-  //     symbol: symbol,
-  //     type: type,
-  //     quantity: Number(quantity),
-  //     buyValue: Number(buyValue),
-  //     sellValue: Number(sellValue),
-  //     buyDate: buyDate,
-  //     sellDate: sellDate,
-  //     image: image
-  //   })
-  //   setLoading(false)
-  // };
-
-  // useEffect(() =>{
-  //   const getData = async () => {
-  //     const data = await getDocs(usercollection);
-  //     setData(data.docs.map((doc)=>({...doc.data(), id: doc.id})));
-  //   }
-
-  //   getData();
-  // }, [])
-
-
+  // function for updating rowdata 
   const updateRow = async(rowData)=>{
     setShowDialog(false);
     setLoading(true)
@@ -125,13 +102,7 @@ const NewColumn = forwardRef((props, ref) => {
     setLoading(false)
   }
 
-
-  // const handleImageChange = (e) => {
-  //   if(e.target.files[0]){
-  //     setImage(e.target.files[0]);
-  //   }
-  // }
-
+  // for uploading image in firebase storage 
   useEffect(() => {
     const uploadFile = () => {
       setImage(image)

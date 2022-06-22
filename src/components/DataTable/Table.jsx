@@ -23,26 +23,16 @@ function Table() {
     const [data, setData] = useState([]);
     const [selectedDataRow, setSelectedDataRow] = useState(null);
     const cm = useRef(null);
+    const childRef = useRef(null);
 
+    // context menu model
     const menuModel = [
         {label: 'Edit', icon: 'pi pi-fw pi-pencil', command: () => editDataRow(selectedDataRow)},
         {label: 'Delete', icon: 'pi pi-fw pi-times', command: () => deleteDataRow(selectedDataRow)}
     ];
 
-    const childRef = useRef(null);
-//     useEffect(() =>{
-//         const getData = async () => {
-//         const querySnapshot = await getDocs(usercollection);
-//         querySnapshot.forEach((doc) => {
-//         // doc.data() is never undefined for query doc snapshots
-//         console.log(doc.id, " => ", doc.data());
-//         });
-//     }
-//     return () => getData();
-// }, [loading])
-
-useEffect(() => {
-
+    // get data from firebase
+    useEffect(() => {
     // LISTEN (REALTIME)
     const unsub = onSnapshot(
       usercollection,
@@ -68,28 +58,14 @@ useEffect(() => {
     };
   }, []);
 
-    // useEffect(() =>{
-    //     getDocs(usercollection)
-    //     .then(res => {
-    //         const data = res.docs.map(doc => ({
-    //             ...doc.data(),
-    //             id: doc.id,
-    //             buyDate: doc.data().buyDate.toDate(),
-    //             sellDate: doc.data().sellDate.toDate(),
-    //         }))
-    //         setLoading(false)
-    //         setData(data)
-    //         console.log('data', data);
-    //     })
-    //     .catch(err => console.log(err))
-    //   }, [loading])
-
+    // edit row in datatable 
     const editDataRow = (e) =>{
         setRowData(e)
         setShowDialog(true);
         setDataStatus('update')
     }
 
+    // delete row in datatable 
     const deleteDataRow = async(e)=>{
         setLoading(true);
         const userDoc = doc(db, "tradeData", e.id);
@@ -97,11 +73,13 @@ useEffect(() => {
         setLoading(false)
     }
 
+    // add new data 
     const addNew = ()=>{
         setShowDialog(true);
         setDataStatus('add');
     }
 
+    // formatting date
     const formatDate = (value) => {
         return value.toLocaleDateString('en-US', {
             day: '2-digit',
@@ -110,18 +88,22 @@ useEffect(() => {
         });
     }
 
+    // table date body template 
     const dateBodyTemplate = (rowData) => {
         return formatDate(rowData);
     }
 
+    // table status template 
     const statusTemplate = (rowData) => {
         return <span className={`py-1 px-2 rounded text-xs bg-${(rowData.buyValue > rowData.sellValue ? 'rose' : 'teal')}-600`}>{(rowData.buyValue > rowData.sellValue ? 'Failure' : 'Success')}</span>;
     }
 
+    // table image template
     const imageBodyTemplate = (rowData) => {
         return <img src={`${rowData.image}`} onError={(e) => e.target.src='https://www.primefaces.org/wp-content/uploads/2020/05/placeholder.png'} alt={rowData.image} className="product-image" />
     }
     
+    // for rendering footer in dialog 
     const renderFooter = () => {
         return (
             <div>
@@ -158,9 +140,7 @@ useEffect(() => {
         <div className='mt-8'>
             <DataTable value={data} rowClassName='table-row' responsiveLayout="stack" breakpoint="1080px" scrollHeight="570px" style={{overflow: 'hidden auto'}} contextMenuSelection={data} onContextMenuSelectionChange={e => setSelectedDataRow(e.value)} onContextMenu={e => cm.current.show(e.originalEvent)} >
 
-                {/* <Column field="id" header="ID" sortable/> */}
                 <Column field="symbol" header="Name" sortable/>
-                {/* <Column header="Image" body={imageBodyTemplate}></Column> */}
                 <Column field="type" header="Type" sortable/>
                 <Column field="quantity" header="Quantity" sortable/>
                 <Column field="buyValue" header="value1" sortable/>

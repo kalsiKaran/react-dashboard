@@ -3,8 +3,9 @@ import { NavLink } from 'react-router-dom';
 import { links } from '../data/data';
 // import {useStateContext} from '../contexts/ContextProvider';
 
-function Sidebar
-() {
+function Sidebar () {
+
+  // function for toggle between themes 
     // const { setMode, currentMode } = useStateContext();
 
     // function toggleTheme(){
