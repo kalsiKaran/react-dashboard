@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import  { useStateContext } from './contexts/ContextProvider'
 import Sidebar from './components/Sidebar';
 import './styles/App.scss';
@@ -30,7 +30,7 @@ function App() {
         <div className='flex routes-container'>
         <Sidebar />
         <Routes>
-          <Route path="/" element={(<Dashboard />)} />
+          <Route path="/" element={<Navigate to="/dashboard" />} />
           <Route path="/dashboard" element={(<Dashboard />)} />
           <Route path="/chart" element={(<Charts />)} />
           <Route path="/data-table" element={(<Table />)} />
