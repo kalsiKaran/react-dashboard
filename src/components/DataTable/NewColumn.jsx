@@ -2,10 +2,6 @@ import React, {useState, useEffect, forwardRef, useRef, useImperativeHandle} fro
 import { InputText } from 'primereact/inputtext';
 import { InputNumber } from 'primereact/inputnumber';
 import { Calendar } from 'primereact/calendar';
-import { Tag } from 'primereact/tag';
-import { Button } from 'primereact/button';
-
-import { FileUpload } from 'primereact/fileupload';
 import { ProgressBar } from 'primereact/progressbar';
 import { db, storage } from '../../data/firebase';
 import {
@@ -36,6 +32,11 @@ const NewColumn = forwardRef((props, ref) => {
   const [buyDate, setBuyDate] = useState(null);
   const [sellDate, setSellDate] = useState(null);
   const [image, setImage] = useState({})
+
+
+  const [totalSize, setTotalSize] = useState(0);
+    const toast = useRef(null);
+    const fileUploadRef = useRef(null);
 
 
   // set row data to input fields if updating 
@@ -97,6 +98,8 @@ const NewColumn = forwardRef((props, ref) => {
       sellValue: Number(sellValue),
       buyDate: buyDate,
       sellDate: sellDate,
+      image: image.img,
+      timeStamp: serverTimestamp()
     };
     await updateDoc(userDoc, updateRowData);
     setLoading(false)
@@ -104,6 +107,9 @@ const NewColumn = forwardRef((props, ref) => {
 
   // for uploading image in firebase storage 
   useEffect(() => {
+    console.log('image', image);
+    // let url = URL.createObjectURL(image)
+    // console.log('url', url);
     const uploadFile = () => {
       setImage(image)
       const name = new Date().getTime() + file.name;
@@ -135,6 +141,7 @@ const NewColumn = forwardRef((props, ref) => {
         () => {
           getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
             setImage(() => ({ img: downloadURL }));
+            console.log(downloadURL);
           });
         }
       );
@@ -186,11 +193,14 @@ const NewColumn = forwardRef((props, ref) => {
       <div>
 
       </div>
-      <div className="flex pt-5">
-        <span className="p-float-label w-full">
-        <input type="file" onChange={(e) => setFile(e.target.files[0])} />
-        <img src={ image } alt="" />
-        </span>
+      <div className="flex pt-8">
+        <div className="file-upload-container w-full">
+          <label className="bg-gray-600 flex justify-center cursor-pointer px-4 py-3" htmlFor="imageUpload">Click here to upload image</label>
+          <input type="file" id='imageUpload' className='hidden' accept="image/png, image/gif, image/jpeg" onChange={(e) => setFile(e.target.files[0])} />
+          <ProgressBar value={per}></ProgressBar>
+          <img src={ image } alt="" />
+          <img src={ image.img } alt="" />
+        </div>
 
       </div>
     </div>
