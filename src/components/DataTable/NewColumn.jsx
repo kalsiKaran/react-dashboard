@@ -141,7 +141,6 @@ const NewColumn = forwardRef((props, ref) => {
         () => {
           getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
             setImage(() => ({ img: downloadURL }));
-            console.log(downloadURL);
           });
         }
       );
@@ -194,12 +193,22 @@ const NewColumn = forwardRef((props, ref) => {
 
       </div>
       <div className="flex pt-8">
-        <div className="file-upload-container w-full">
-          <label className="bg-gray-600 flex justify-center cursor-pointer px-4 py-3" htmlFor="imageUpload">Click here to upload image</label>
+        <div className="file-upload-container w-full relative border border-neutral-500 rounded overflow-hidden flex">
+          <div className="absolute bottom-0 z-20 w-full">
+            <ProgressBar value={per} style={{ height: '6px', borderRadius: 0 }} color='slate-90'></ProgressBar>
+          </div>
+
+          <label className="h-60 w-1/2 flex justify-center items-center flex-col cursor-pointer px-4 py-3 z-10 relative bg-black/50" htmlFor="imageUpload">
+            <i className="fas fa-upload text-5xl text-gray-200 mb-2"></i>
+            Click here to upload image</label>
           <input type="file" id='imageUpload' className='hidden' accept="image/png, image/gif, image/jpeg" onChange={(e) => setFile(e.target.files[0])} />
-          <ProgressBar value={per}></ProgressBar>
-          <img src={ image } alt="" />
-          <img src={ image.img } alt="" />
+          {
+            Object.keys(image).length !== 0 ?  //to check empty object
+            (image.img ? 
+            <img src={ image.img } alt={image.img} className='w-1/2 object-cover' /> :
+            <img src={ image } alt={image} className='w-1/2 object-cover' />)
+            : <i class="far fa-image text-9xl h-full w-1/2 flex items-center justify-center"></i>
+          }
         </div>
 
       </div>
