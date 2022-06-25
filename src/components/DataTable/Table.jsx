@@ -46,10 +46,9 @@ function Table() {
              });
         });
         setData(list);
-        console.log(data);
       },
       (error) => {
-        console.log(error);
+        // console.log(error);
       }
     );
 
@@ -60,6 +59,7 @@ function Table() {
 
     // edit row in datatable 
     const editDataRow = (e) =>{
+        console.log(e);
         setRowData(e)
         setShowDialog(true);
         setDataStatus('update')
@@ -88,6 +88,10 @@ function Table() {
         });
     }
 
+    const typeTemplate = (rowData) => {
+        return <span>{rowData.tradeType.name}</span>
+    }
+
     // table date body template 
     const dateBodyTemplate = (rowData) => {
         return formatDate(rowData);
@@ -95,7 +99,7 @@ function Table() {
 
     // table status template 
     const statusTemplate = (rowData) => {
-        return <span className={`py-1 px-2 rounded text-xs bg-${(rowData.buyValue > rowData.sellValue ? 'rose' : 'teal')}-600`}>{(rowData.buyValue > rowData.sellValue ? 'Failure' : 'Success')}</span>;
+        return <span className={`py-1 px-2 rounded text-xs bg-${(rowData.buyValue > rowData.sellValue ? 'danger' : 'success')}`}>{(rowData.buyValue > rowData.sellValue ? 'Failure' : 'Success')}</span>;
     }
 
     // table image template
@@ -141,7 +145,7 @@ function Table() {
             <DataTable value={data} rowClassName='table-row' responsiveLayout="stack" breakpoint="1080px" scrollHeight="570px" style={{overflow: 'hidden auto'}} contextMenuSelection={data} onContextMenuSelectionChange={e => setSelectedDataRow(e.value)} onContextMenu={e => cm.current.show(e.originalEvent)} >
 
                 <Column field="symbol" header="Name" sortable/>
-                <Column field="type" header="Type" sortable/>
+                <Column field="tradeType" header="Type" body={typeTemplate} sortable/>
                 <Column field="quantity" header="Quantity" sortable/>
                 <Column field="buyValue" header="value1" sortable/>
                 <Column field="sellValue" header="value2" sortable/>

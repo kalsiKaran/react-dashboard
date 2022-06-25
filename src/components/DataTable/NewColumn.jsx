@@ -1,9 +1,12 @@
 import React, {useState, useEffect, forwardRef, useRef, useImperativeHandle} from 'react'
 import { InputText } from 'primereact/inputtext';
 import { InputNumber } from 'primereact/inputnumber';
+import { Dropdown } from 'primereact/dropdown';
 import { Calendar } from 'primereact/calendar';
 import { ProgressBar } from 'primereact/progressbar';
 import { db, storage } from '../../data/firebase';
+import { typeOptions } from '../../data/data';
+
 import {
   addDoc,
   collection,
@@ -25,7 +28,7 @@ const NewColumn = forwardRef((props, ref) => {
   const [per, setPerc] = useState(null);
 
   const [symbol, setSymbol] = useState("");
-  const [type, setType] = useState("");
+  const [tradeType, setTradeType] = useState(null);
   const [quantity, setQuantity] = useState();
   const [buyValue, setBuyValue] = useState();
   const [sellValue, setSellValue] = useState();
@@ -34,16 +37,11 @@ const NewColumn = forwardRef((props, ref) => {
   const [image, setImage] = useState({})
 
 
-  const [totalSize, setTotalSize] = useState(0);
-    const toast = useRef(null);
-    const fileUploadRef = useRef(null);
-
-
   // set row data to input fields if updating 
   useEffect(() =>{
-      if(dataStatus === 'update' && rowData){
+    if(dataStatus === 'update' && rowData){
         setSymbol(rowData.symbol);
-        setType(rowData.type);
+        setTradeType(rowData.tradeType);
         setQuantity(rowData.quantity);
         setBuyValue(rowData.buyValue);
         setSellValue(rowData.sellValue);
@@ -70,7 +68,7 @@ const NewColumn = forwardRef((props, ref) => {
     try {
       await setDoc(doc(usercollection), {
         symbol: symbol,
-        type: type,
+        tradeType: tradeType,
         quantity: Number(quantity),
         buyValue: Number(buyValue),
         sellValue: Number(sellValue),
@@ -87,12 +85,13 @@ const NewColumn = forwardRef((props, ref) => {
 
   // function for updating rowdata 
   const updateRow = async(rowData)=>{
+    console.log(rowData);
     setShowDialog(false);
     setLoading(true)
     const userDoc = doc(db, "tradeData", rowData.id);
     const updateRowData = {
       symbol: symbol,
-      type: type,
+      tradeType: tradeType,
       quantity: Number(quantity),
       buyValue: Number(buyValue),
       sellValue: Number(sellValue),
@@ -107,9 +106,6 @@ const NewColumn = forwardRef((props, ref) => {
 
   // for uploading image in firebase storage 
   useEffect(() => {
-    console.log('image', image);
-    // let url = URL.createObjectURL(image)
-    // console.log('url', url);
     const uploadFile = () => {
       setImage(image)
       const name = new Date().getTime() + file.name;
@@ -122,21 +118,22 @@ const NewColumn = forwardRef((props, ref) => {
         "state_changed",
         (snapshot) => {
           const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-          console.log("Upload is " + progress + "% done");
+          // console.log("Upload is " + progress + "% done");
           setPerc(progress);
+          console.log(snapshot.state);
           switch (snapshot.state) {
             case "paused":
-              console.log("Upload is paused");
+              // console.log("Upload is paused");
               break;
             case "running":
-              console.log("Upload is running");
+              // console.log("Upload is running");
               break;
             default:
               break;
           }
         },
         (error) => {
-          console.log(error);
+          // console.log(error);
         },
         () => {
           getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
@@ -152,40 +149,41 @@ const NewColumn = forwardRef((props, ref) => {
     <div className='w-full'>
       <div className="flex pt-5">
         <span className="p-float-label w-full mr-4">
-          <InputText id="in" value={symbol} onChange={(e) => setSymbol(e.target.value)} className="w-full" />
-          <label htmlFor="in">Symbol</label>
+          <InputText id="symbol" value={symbol} onChange={(e) => setSymbol(e.target.value)} className="w-full" />
+          <label htmlFor="symbol" className='block'>Symbol</label>
         </span>
 
         <span className="p-float-label w-full">
-          <InputText id="in" value={type} onChange={(e) => setType(e.target.value)} className="w-full" />
-          <label htmlFor="in">Type</label>
+        <Dropdown value={tradeType} options={typeOptions} onChange={(e) => setTradeType(e.value)} optionLabel="name" placeholder="Select Type" className='w-full' />
+          {/* <InputText id="type" value={type} onChange={(e) => setType(e.target.value)} className="w-full" />
+          <label htmlFor="type">Type</label> */}
         </span>
       </div>
       <div className="flex pt-5">
         <span className="p-float-label w-full mr-4">
-          <InputNumber id="in" value={quantity} onChange={(e) => setQuantity(e.value)} className="w-full" />
-          <label htmlFor="in">Quantity</label>
+          <InputNumber id="quantity" value={quantity} onChange={(e) => setQuantity(e.value)} className="w-full" />
+          <label htmlFor="quantity">Quantity</label>
         </span>
 
         <span className="p-float-label w-full mr-4">
-          <InputNumber id="in" mode="decimal" minFractionDigits={0} maxFractionDigits={3} className="w-full" value={buyValue} onChange={(e) => setBuyValue(e.value)} />
-          <label htmlFor="in">Value 1</label>
+          <InputNumber id="buyValue" mode="decimal" minFractionDigits={0} maxFractionDigits={3} className="w-full" value={buyValue} onChange={(e) => setBuyValue(e.value)} />
+          <label htmlFor="buyValue">Value 1</label>
         </span>
 
         <span className="p-float-label w-full">
-          <InputNumber id="in" minFractionDigits={0} maxFractionDigits={3} className="w-full" value={sellValue} onChange={(e) => setSellValue(e.value)} />
-          <label htmlFor="in">Value 2</label>
+          <InputNumber id="sellValue" minFractionDigits={0} maxFractionDigits={3} className="w-full" value={sellValue} onChange={(e) => setSellValue(e.value)} />
+          <label htmlFor="sellValue">Value 2</label>
         </span>
 
       </div>
       <div className="flex pt-5">
         <span className="p-float-label w-full mr-4">
-          <Calendar value={buyDate} dateFormat="dd/mm/yy" onChange={(e) => setBuyDate(e.value)} className="w-full"></Calendar>
-          <label htmlFor="in">start Date</label>
+          <Calendar value={buyDate} dateFormat="dd/mm/yy" onChange={(e) => setBuyDate(e.value)} className="w-full" id='startDate'></Calendar>
+          <label htmlFor="startDate">Start Date</label>
         </span>
         <span className="p-float-label w-full">
-          <Calendar value={sellDate} dateFormat="dd/mm/yy" onChange={(e) => setSellDate(e.value)} className="w-full"></Calendar>
-          <label htmlFor="in">end Date</label>
+          <Calendar value={sellDate} dateFormat="dd/mm/yy" onChange={(e) => setSellDate(e.value)} className="w-full" id='endDate'></Calendar>
+          <label htmlFor="endDate">End Date</label>
         </span>
 
       </div>
@@ -205,9 +203,9 @@ const NewColumn = forwardRef((props, ref) => {
           {
             Object.keys(image).length !== 0 ?  //to check empty object
             (image.img ? 
-            <img src={ image.img } alt={image.img} className='w-1/2 object-cover' /> :
-            <img src={ image } alt={image} className='w-1/2 object-cover' />)
-            : <i class="far fa-image text-9xl h-full w-1/2 flex items-center justify-center"></i>
+            <img src={ image.img } alt={image.img} className='w-1/2 h-60 object-contain' /> :
+            <img src={ image } alt={image} className='w-1/2 h-60 object-contain' />)
+            : <i className="far fa-image text-9xl h-full w-1/2 flex items-center justify-center"></i>
           }
         </div>
 

@@ -20,3 +20,12 @@ export const links = [
         icon: 'fa-solid fa-gear',
     },
   ];
+
+
+ export const typeOptions = [
+    { name: 'New York', code: 'NY' },
+    { name: 'Rome', code: 'RM' },
+    { name: 'London', code: 'LDN' },
+    { name: 'Istanbul', code: 'IST' },
+    { name: 'Paris', code: 'PRS' }
+];

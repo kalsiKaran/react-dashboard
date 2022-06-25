@@ -1,5 +1,12 @@
 @import './variables.scss';
 
+.bg-success{
+    background: $green;
+}
+.bg-danger{
+    background: $red;
+}
+
 .table-row{
     border-bottom: 1px solid $gray-700;
     background-color: transparent !important;
