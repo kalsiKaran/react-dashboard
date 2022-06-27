@@ -1,5 +1,4 @@
-import React, {useState, useEffect, forwardRef, useRef, useImperativeHandle} from 'react';
-import { useForm, Controller } from 'react-hook-form';
+import React, {useState, useEffect, forwardRef, useRef, useImperativeHandle} from 'react'
 import { InputText } from 'primereact/inputtext';
 import { InputNumber } from 'primereact/inputnumber';
 import { Dropdown } from 'primereact/dropdown';
@@ -7,8 +6,6 @@ import { Calendar } from 'primereact/calendar';
 import { ProgressBar } from 'primereact/progressbar';
 import { db, storage } from '../../data/firebase';
 import { typeOptions } from '../../data/data';
-import { classNames } from 'primereact/utils';
-import { Dialog } from 'primereact/dialog';
 
 import {
   addDoc,
@@ -24,7 +21,7 @@ import { useStateContext } from '../../contexts/ContextProvider';
 
 const NewColumn = forwardRef((props, ref) => {
   
-  const { setShowDialog, rowData, dataStatus, setLoading, showDialog } = useStateContext();
+  const { setShowDialog, rowData, dataStatus, setLoading } = useStateContext();
 
   const usercollection = collection(db, "tradeData")
   const [file, setFile] = useState("");
@@ -38,19 +35,6 @@ const NewColumn = forwardRef((props, ref) => {
   const [buyDate, setBuyDate] = useState(null);
   const [sellDate, setSellDate] = useState(null);
   const [image, setImage] = useState({})
-
-  const formControl = {
-    symbol: '',
-    tradeType: '',
-    quantity: '',
-    buyValue: '',
-    sellValue: '',
-    buyDate: null,
-    sellDate: null,
-    image: {},
-  }
-
-    const { control, formState: { errors }, handleSubmit, reset } = useForm({ formControl });
 
 
   // set row data to input fields if updating 
@@ -69,22 +53,28 @@ const NewColumn = forwardRef((props, ref) => {
 
 
   // calling child function using forward ref 
-//   useImperativeHandle(ref, () => ({
-//     callChildFunction(e){
-//       if(e === 'add'){
-//         addRow();
-//       }else{
-//         updateRow(rowData)
-//       }
-//     }
-//   }))
+  useImperativeHandle(ref, () => ({
+    callChildFunction(e){
+      if(e === 'add'){
+        addRow();
+      }else{
+        updateRow(rowData)
+      }
+    }
+  }))
 
   // function for adding new row 
   const addRow = async (e) => {
-    console.log(e);
     try {
       await setDoc(doc(usercollection), {
-        formData: e,
+        symbol: symbol,
+        tradeType: tradeType,
+        quantity: Number(quantity),
+        buyValue: Number(buyValue),
+        sellValue: Number(sellValue),
+        buyDate: buyDate,
+        sellDate: sellDate,
+        image: image,
         timeStamp: serverTimestamp(),
       });
       setShowDialog(false);
@@ -155,64 +145,31 @@ const NewColumn = forwardRef((props, ref) => {
     file && uploadFile();
   }, [file]);
 
-// for rendering footer in dialog 
-const renderFooter = () => {
-    return (
-        <div>
-            <button className="btn btn-primary border-solid border-2 border-red-500 hover:bg-red-500 transition-all" onClick={() => setShowDialog(false)}>Cancel</button>
-            <button type='submit' onClick={handleSubmit(addRow)} className="btn btn-primary border-solid border-2 border-blue-500 bg-blue-500 hover:bg-blue-600 transition-all" >{dataStatus === 'add' ? 'Add' : 'Update'}</button>
-        </div>
-    );
-}
-
   return (
     <div className='w-full'>
-        <Dialog header={dataStatus === 'add' ? 'Add New' : 'Update Columns'}
-            visible={showDialog}
-            style={{width: '50vw'}}
-            breakpoints={{'960px':'75vw', '640px': '100vw'}}
-            draggable={false}
-            footer={renderFooter('displayBasic')} 
-            onHide={() => setShowDialog(false)}
-            dismissableMask={true} 
-            >
-    {/* <form onSubmit={handleSubmit(addRow)}> */}
-
-        
       <div className="flex pt-5">
         <span className="p-float-label w-full mr-4">
-        <Controller name="symbol" control={control} rules={{ required: 'Name is required.' }} render={({ field, fieldState }) => (
-          <InputText id={field.symbol} {...field}  className={classNames({ 'w-full p-invalid': fieldState.error })} />
-          )} />
+          <InputText id="symbol" value={symbol} onChange={(e) => setSymbol(e.target.value)} className="w-full" />
           <label htmlFor="symbol" className='block'>Symbol</label>
         </span>
 
         <span className="p-float-label w-full">
-        <Controller name="tradeType" control={control} rules={{ required: 'Name is required.' }} render={({ field, fieldState }) => (
-        <Dropdown id={field.tradeType} {...field} value={field.value} options={typeOptions} onChange={(e) => field.onChange(e.value)} optionLabel="name" placeholder="Select Type" className={classNames({ 'w-full p-invalid': fieldState.error })} />
-        
-        )} />
+        <Dropdown value={tradeType} options={typeOptions} onChange={(e) => setTradeType(e.value)} optionLabel="name" placeholder="Select Type" className='w-full' />
         </span>
       </div>
       <div className="flex pt-5">
         <span className="p-float-label w-full mr-4">
-        <Controller name="quantity" control={control} rules={{ required: true }} render={({ field, fieldState }) => (
-          <InputText id={field.quantity} {...field} className={classNames({ 'w-full p-invalid': fieldState.error })} />
-          )} />
+          <InputNumber id="quantity" value={quantity} onChange={(e) => setQuantity(e.value)} className="w-full" />
           <label htmlFor="quantity">Quantity</label>
         </span>
 
         <span className="p-float-label w-full mr-4">
-        <Controller name="buyValue" control={control} rules={{ required: true }} render={({ field, fieldState }) => (
-          <InputText id={field.buyValue} {...field} className={classNames({ 'w-full p-invalid': fieldState.error })} />
-          )} />
+          <InputNumber id="buyValue" mode="decimal" minFractionDigits={0} maxFractionDigits={3} className="w-full" value={buyValue} onChange={(e) => setBuyValue(e.value)} />
           <label htmlFor="buyValue">Value 1</label>
         </span>
 
         <span className="p-float-label w-full">
-        <Controller name="sellValue" control={control} rules={{ required: true }} render={({ field, fieldState }) => (
-          <InputText id={field.sellValue} {...field} className={classNames({ 'w-full p-invalid': fieldState.error })} />
-          )} />
+          <InputNumber id="sellValue" minFractionDigits={0} maxFractionDigits={3} className="w-full" value={sellValue} onChange={(e) => setSellValue(e.value)} />
           <label htmlFor="sellValue">Value 2</label>
         </span>
 
@@ -220,15 +177,11 @@ const renderFooter = () => {
       <div className="flex pt-5">
         {/* Use selectionMode="range" instead of using start and end dates  */}
         <span className="p-float-label w-full mr-4">
-        <Controller name="buyDate" control={control} rules={{ required: true }} render={({ field, fieldState }) => (
-          <Calendar id={field.buyDate} {...field} dateFormat="dd/mm/yy" onChange={(e) => field.onChange(e.value)} className={classNames({ 'w-full p-invalid': fieldState.error })}></Calendar>
-            )} />
+          <Calendar value={buyDate} dateFormat="dd/mm/yy" onChange={(e) => setBuyDate(e.value)} className="w-full" id='startDate'></Calendar>
           <label htmlFor="startDate">Start Date</label>
         </span>
         <span className="p-float-label w-full">
-        <Controller name="sellDate" control={control} rules={{ required: true }} render={({ field, fieldState }) => (
-          <Calendar id={field.sellDate} {...field} dateFormat="dd/mm/yy" onChange={(e) => field.onChange(e.value)} className={classNames({ 'w-full p-invalid': fieldState.error })}></Calendar>
-          )} />
+          <Calendar value={sellDate} dateFormat="dd/mm/yy" onChange={(e) => setSellDate(e.value)} className="w-full" id='endDate'></Calendar>
           <label htmlFor="endDate">End Date</label>
         </span>
 
@@ -254,8 +207,6 @@ const renderFooter = () => {
         </div>
 
       </div>
-      {/* </form> */}
-        </Dialog>
     </div>
   )
 })

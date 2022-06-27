@@ -17,7 +17,7 @@ import { useStateContext } from '../../contexts/ContextProvider';
 
 function Table() {
 
-    const { showDialog, setShowDialog, dataStatus, setDataStatus, setRowData, loading, setLoading } = useStateContext();
+    const { showDialog, setShowDialog, setDataStatus, setRowData, loading, setLoading } = useStateContext();
 
     const usercollection = collection(db, "tradeData")
     const [data, setData] = useState([]);
@@ -41,8 +41,8 @@ function Table() {
         snapShot.docs.forEach((doc) => {
           list.push({ id: doc.id,
                         ...doc.data(),
-                        buyDate: doc.data().buyDate.toDate(),
-                        sellDate: doc.data().sellDate.toDate(),
+                        buyDate: doc.data().formData.buyDate.toDate(),
+                        sellDate: doc.data().formData.sellDate.toDate(),
              });
         });
         setData(list);
@@ -59,7 +59,6 @@ function Table() {
 
     // edit row in datatable 
     const editDataRow = (e) =>{
-        console.log(e);
         setRowData(e)
         setShowDialog(true);
         setDataStatus('update')
@@ -89,7 +88,7 @@ function Table() {
     }
 
     const typeTemplate = (rowData) => {
-        return <span>{rowData.tradeType.name}</span>
+        return <span>{rowData.formData.tradeType.name}</span>
     }
 
     // table date body template 
@@ -104,18 +103,10 @@ function Table() {
 
     // table image template
     const imageBodyTemplate = (rowData) => {
-        return <img src={`${rowData.image}`} onError={(e) => e.target.src='https://www.primefaces.org/wp-content/uploads/2020/05/placeholder.png'} alt={rowData.image} className="product-image" />
+        return <img src={`${rowData.image.img}`} onError={(e) => e.target.src='https://www.primefaces.org/wp-content/uploads/2020/05/placeholder.png'} alt={rowData.image} className="product-image" />
     }
     
-    // for rendering footer in dialog 
-    const renderFooter = () => {
-        return (
-            <div>
-                <button className="btn btn-primary border-solid border-2 border-red-500 hover:bg-red-500 transition-all" onClick={() => setShowDialog(false)}>Cancel</button>
-                <button className="btn btn-primary border-solid border-2 border-blue-500 bg-blue-500 hover:bg-blue-600 transition-all" onClick={() => childRef.current.callChildFunction(dataStatus)}>{dataStatus === 'add' ? 'Add' : 'Update'}</button>
-            </div>
-        );
-    }
+    
 
   return (
     <div className='primary-box w-full text-dark dark:text-white'>
@@ -125,23 +116,14 @@ function Table() {
         </div>
 
         {/* dialog for add new row */}
-        <Dialog header={dataStatus === 'add' ? 'Add New' : 'Update Columns'}
-            visible={showDialog}
-            style={{width: '50vw'}}
-            breakpoints={{'960px':'75vw', '640px': '100vw'}}
-            draggable={false}
-            footer={renderFooter('displayBasic')} 
-            onHide={() => setShowDialog(false)}
-            dismissableMask={true} 
-            >
-            <NewColumn ref={childRef}/>
-        </Dialog>
+        {showDialog && <NewColumn />}
 
         {/* context menu for table */}
         <ContextMenu model={menuModel} ref={cm} onHide={() => setSelectedDataRow(null)}/>
 
         {/* data table */}
         <div className='mt-8'>
+            {console.log(data)}
             <DataTable value={data} rowClassName='table-row' responsiveLayout="stack" breakpoint="1080px" scrollHeight="570px" style={{overflow: 'hidden auto'}} contextMenuSelection={data} onContextMenuSelectionChange={e => setSelectedDataRow(e.value)} onContextMenu={e => cm.current.show(e.originalEvent)} >
 
                 <Column field="symbol" header="Name" sortable/>
