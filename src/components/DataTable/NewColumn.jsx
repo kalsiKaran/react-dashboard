@@ -146,6 +146,7 @@ const getFormErrorMessage = (name) => {
     <div className='w-full'>
       <Dialog header={dataStatus === 'add' ? 'Add New' : 'Update Columns'}
             visible={showDialog}
+            draggable={false}
             style={{width: '50vw'}}
             footer={renderFooter('displayBasic')} 
             onHide={() => setShowDialog(false)}
