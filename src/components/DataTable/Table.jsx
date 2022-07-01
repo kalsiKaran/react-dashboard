@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { DataTable } from 'primereact/datatable';
 import { Column } from 'primereact/column';
-import { Dialog } from 'primereact/dialog';
 import "primereact/resources/themes/md-dark-indigo/theme.css";
 import 'primereact/resources/primereact.css';
 import 'primeicons/primeicons.css';
@@ -10,8 +9,8 @@ import { ContextMenu } from 'primereact/contextmenu';
 import '../../styles/tables.scss';
 import NewColumn from './NewColumn';
 import { db } from '../../data/firebase';
-import { collection, getDocs, doc, query, onSnapshot } from "firebase/firestore";
-import { deleteDoc, updateDoc } from 'firebase/firestore/lite';
+import { collection, doc, onSnapshot } from "firebase/firestore";
+import { deleteDoc } from 'firebase/firestore/lite';
 import { useStateContext } from '../../contexts/ContextProvider';
 
 
@@ -23,7 +22,6 @@ function Table() {
     const [data, setData] = useState([]);
     const [selectedDataRow, setSelectedDataRow] = useState(null);
     const cm = useRef(null);
-    const childRef = useRef(null);
 
     // context menu model
     const menuModel = [
@@ -40,9 +38,14 @@ function Table() {
         let list = [];
         snapShot.docs.forEach((doc) => {
           list.push({ id: doc.id,
-                        ...doc.data(),
+                        symbol: doc.data().formData.symbol,
+                        tradeType: doc.data().formData.tradeType,
+                        quantity: doc.data().formData.quantity,
+                        buyValue: doc.data().formData.buyValue,
+                        sellValue: doc.data().formData.sellValue,
                         buyDate: doc.data().formData.buyDate.toDate(),
                         sellDate: doc.data().formData.sellDate.toDate(),
+                        image: doc.data().image
              });
         });
         setData(list);
@@ -88,7 +91,7 @@ function Table() {
     }
 
     const typeTemplate = (rowData) => {
-        return <span>{rowData.formData.tradeType.name}</span>
+        return <span>{rowData.tradeType.name}</span>
     }
 
     // table date body template 
@@ -96,16 +99,17 @@ function Table() {
         return formatDate(rowData);
     }
 
-    // table status template 
-    const statusTemplate = (rowData) => {
-        return <span className={`py-1 px-2 rounded text-xs bg-${(rowData.buyValue > rowData.sellValue ? 'danger' : 'success')}`}>{(rowData.buyValue > rowData.sellValue ? 'Failure' : 'Success')}</span>;
+    // table winOrLoss template 
+    const winOrLossTemplate = (rowData) => {
+        return <span className={`py-1 px-2 rounded text-xs bg-${(rowData.buyValue >= rowData.sellValue ? 'danger' : 'success')}`}>
+          {rowData.quantity * (rowData.sellValue - rowData.buyValue)}
+        </span>;
     }
 
     // table image template
     const imageBodyTemplate = (rowData) => {
         return <img src={`${rowData.image.img}`} onError={(e) => e.target.src='https://www.primefaces.org/wp-content/uploads/2020/05/placeholder.png'} alt={rowData.image} className="product-image" />
     }
-    
     
 
   return (
@@ -123,7 +127,6 @@ function Table() {
 
         {/* data table */}
         <div className='mt-8'>
-            {console.log(data)}
             <DataTable value={data} rowClassName='table-row' responsiveLayout="stack" breakpoint="1080px" scrollHeight="570px" style={{overflow: 'hidden auto'}} contextMenuSelection={data} onContextMenuSelectionChange={e => setSelectedDataRow(e.value)} onContextMenu={e => cm.current.show(e.originalEvent)} >
 
                 <Column field="symbol" header="Name" sortable/>
@@ -131,11 +134,11 @@ function Table() {
                 <Column field="quantity" header="Quantity" sortable/>
                 <Column field="buyValue" header="value1" sortable/>
                 <Column field="sellValue" header="value2" sortable/>
+                <Column field="winOrLoss" header="Total" body={winOrLossTemplate} sortable/>
                 <Column field="buyDate" header="Date1" dataType="date" 
                 body={e => dateBodyTemplate(e.buyDate)} sortable/>
                 <Column field="sellDate" header="Date2" dataType="date" body={e => dateBodyTemplate(e.sellDate)} sortable/>
                 <Column field="image" header="Image" body={imageBodyTemplate} />
-                <Column field="status" header="Status" body={statusTemplate} sortable/>
             </DataTable>
         </div>
     </div>

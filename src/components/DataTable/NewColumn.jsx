@@ -1,7 +1,7 @@
-import React, {useState, useEffect, forwardRef, useRef, useImperativeHandle} from 'react';
+import React, { useState, useEffect } from 'react';
+import 'primereact/resources/primereact.css';
 import { useForm, Controller } from 'react-hook-form';
 import { InputText } from 'primereact/inputtext';
-import { InputNumber } from 'primereact/inputnumber';
 import { Dropdown } from 'primereact/dropdown';
 import { Calendar } from 'primereact/calendar';
 import { ProgressBar } from 'primereact/progressbar';
@@ -10,19 +10,13 @@ import { typeOptions } from '../../data/data';
 import { classNames } from 'primereact/utils';
 import { Dialog } from 'primereact/dialog';
 
-import {
-  addDoc,
-  collection,
-  doc,
-  serverTimestamp,
-  setDoc,
-} from "firebase/firestore";
+import { collection, doc, serverTimestamp, setDoc, } from "firebase/firestore";
 import { updateDoc } from 'firebase/firestore/lite';
 import { ref as imageRef, uploadBytesResumable, getDownloadURL } from "firebase/storage";
 import { useStateContext } from '../../contexts/ContextProvider';
 
 
-const NewColumn = forwardRef((props, ref) => {
+function NewColumn() {
   
   const { setShowDialog, rowData, dataStatus, setLoading, showDialog } = useStateContext();
 
@@ -30,16 +24,9 @@ const NewColumn = forwardRef((props, ref) => {
   const [file, setFile] = useState("");
   const [per, setPerc] = useState(null);
 
-  const [symbol, setSymbol] = useState("");
-  const [tradeType, setTradeType] = useState(null);
-  const [quantity, setQuantity] = useState();
-  const [buyValue, setBuyValue] = useState();
-  const [sellValue, setSellValue] = useState();
-  const [buyDate, setBuyDate] = useState(null);
-  const [sellDate, setSellDate] = useState(null);
   const [image, setImage] = useState({})
 
-  const formControl = {
+  let defaultValues = {
     symbol: '',
     tradeType: '',
     quantity: '',
@@ -48,43 +35,36 @@ const NewColumn = forwardRef((props, ref) => {
     buyDate: null,
     sellDate: null,
     image: {},
-  }
+  };
 
-    const { control, formState: { errors }, handleSubmit, reset } = useForm({ formControl });
+  // set row data to input fields if updating
+    if(dataStatus === 'update'){
+      defaultValues = {
+        symbol: rowData.symbol,
+        tradeType: rowData.tradeType,
+        quantity: rowData.quantity,
+        buyValue: rowData.buyValue,
+        sellValue: rowData.sellValue,
+        buyDate: rowData.buyDate,
+        sellDate: rowData.sellDate,
+        image: rowData.image,
+      }
+    }
 
-
-  // set row data to input fields if updating 
-  useEffect(() =>{
-    if(dataStatus === 'update' && rowData){
-        setSymbol(rowData.symbol);
-        setTradeType(rowData.tradeType);
-        setQuantity(rowData.quantity);
-        setBuyValue(rowData.buyValue);
-        setSellValue(rowData.sellValue);
-        setBuyDate(rowData.buyDate);
-        setSellDate(rowData.sellDate);
+    useEffect(() => {
+      if(dataStatus === 'update'){
         setImage(rowData.image)
       }
-    }, [rowData, dataStatus])
-
-
-  // calling child function using forward ref 
-//   useImperativeHandle(ref, () => ({
-//     callChildFunction(e){
-//       if(e === 'add'){
-//         addRow();
-//       }else{
-//         updateRow(rowData)
-//       }
-//     }
-//   }))
+    }, [rowData])
+    
+  const { handleSubmit, formState: { errors }, reset, control } = useForm({ defaultValues });
 
   // function for adding new row 
   const addRow = async (e) => {
-    console.log(e);
     try {
       await setDoc(doc(usercollection), {
         formData: e,
+        image: image,
         timeStamp: serverTimestamp(),
       });
       setShowDialog(false);
@@ -94,21 +74,14 @@ const NewColumn = forwardRef((props, ref) => {
   }
 
   // function for updating rowdata 
-  const updateRow = async(rowData)=>{
-    console.log(rowData);
+  const updateRow = async(e)=>{
     setShowDialog(false);
     setLoading(true)
     const userDoc = doc(db, "tradeData", rowData.id);
     const updateRowData = {
-      symbol: symbol,
-      tradeType: tradeType,
-      quantity: Number(quantity),
-      buyValue: Number(buyValue),
-      sellValue: Number(sellValue),
-      buyDate: buyDate,
-      sellDate: sellDate,
+      formData: e,
       image: image,
-      timeStamp: serverTimestamp()
+      timeStamp: serverTimestamp(),
     };
     await updateDoc(userDoc, updateRowData);
     setLoading(false)
@@ -160,104 +133,126 @@ const renderFooter = () => {
     return (
         <div>
             <button className="btn btn-primary border-solid border-2 border-red-500 hover:bg-red-500 transition-all" onClick={() => setShowDialog(false)}>Cancel</button>
-            <button type='submit' onClick={handleSubmit(addRow)} className="btn btn-primary border-solid border-2 border-blue-500 bg-blue-500 hover:bg-blue-600 transition-all" >{dataStatus === 'add' ? 'Add' : 'Update'}</button>
+            <button type='submit' onClick={handleSubmit(dataStatus === 'add' ? addRow : updateRow)} className="btn btn-primary border-solid border-2 border-blue-500 bg-blue-500 hover:bg-blue-600 transition-all" >{dataStatus === 'add' ? 'Add' : 'Update'}</button>
         </div>
     );
 }
 
+const getFormErrorMessage = (name) => {
+  return errors[name] && <small className="p-error text-xs">{errors[name].message}</small>
+};
+
   return (
     <div className='w-full'>
-        <Dialog header={dataStatus === 'add' ? 'Add New' : 'Update Columns'}
+      <Dialog header={dataStatus === 'add' ? 'Add New' : 'Update Columns'}
             visible={showDialog}
             style={{width: '50vw'}}
-            breakpoints={{'960px':'75vw', '640px': '100vw'}}
-            draggable={false}
             footer={renderFooter('displayBasic')} 
             onHide={() => setShowDialog(false)}
             dismissableMask={true} 
             >
-    {/* <form onSubmit={handleSubmit(addRow)}> */}
-
         
-      <div className="flex pt-5">
-        <span className="p-float-label w-full mr-4">
-        <Controller name="symbol" control={control} rules={{ required: 'Name is required.' }} render={({ field, fieldState }) => (
-          <InputText id={field.symbol} {...field}  className={classNames({ 'w-full p-invalid': fieldState.error })} />
-          )} />
-          <label htmlFor="symbol" className='block'>Symbol</label>
-        </span>
-
-        <span className="p-float-label w-full">
-        <Controller name="tradeType" control={control} rules={{ required: 'Name is required.' }} render={({ field, fieldState }) => (
-        <Dropdown id={field.tradeType} {...field} value={field.value} options={typeOptions} onChange={(e) => field.onChange(e.value)} optionLabel="name" placeholder="Select Type" className={classNames({ 'w-full p-invalid': fieldState.error })} />
-        
-        )} />
-        </span>
-      </div>
-      <div className="flex pt-5">
-        <span className="p-float-label w-full mr-4">
-        <Controller name="quantity" control={control} rules={{ required: true }} render={({ field, fieldState }) => (
-          <InputText id={field.quantity} {...field} className={classNames({ 'w-full p-invalid': fieldState.error })} />
-          )} />
-          <label htmlFor="quantity">Quantity</label>
-        </span>
-
-        <span className="p-float-label w-full mr-4">
-        <Controller name="buyValue" control={control} rules={{ required: true }} render={({ field, fieldState }) => (
-          <InputText id={field.buyValue} {...field} className={classNames({ 'w-full p-invalid': fieldState.error })} />
-          )} />
-          <label htmlFor="buyValue">Value 1</label>
-        </span>
-
-        <span className="p-float-label w-full">
-        <Controller name="sellValue" control={control} rules={{ required: true }} render={({ field, fieldState }) => (
-          <InputText id={field.sellValue} {...field} className={classNames({ 'w-full p-invalid': fieldState.error })} />
-          )} />
-          <label htmlFor="sellValue">Value 2</label>
-        </span>
-
-      </div>
-      <div className="flex pt-5">
-        {/* Use selectionMode="range" instead of using start and end dates  */}
-        <span className="p-float-label w-full mr-4">
-        <Controller name="buyDate" control={control} rules={{ required: true }} render={({ field, fieldState }) => (
-          <Calendar id={field.buyDate} {...field} dateFormat="dd/mm/yy" onChange={(e) => field.onChange(e.value)} className={classNames({ 'w-full p-invalid': fieldState.error })}></Calendar>
+      <div className="block sm:flex pt-5">
+        <div className='w-full mr-4 mb-4 sm:mb-0'>
+          <span className="p-float-label">
+          <Controller name="symbol" control={control} rules={{ required: 'Symbol is required.' }} render={({ field, fieldState }) => (
+            <InputText id={field.symbol} value={field.value} onChange={field.onChange} className={`w-full ${classNames({ 'p-invalid': fieldState.error })}`} />
             )} />
-          <label htmlFor="startDate">Start Date</label>
-        </span>
-        <span className="p-float-label w-full">
-        <Controller name="sellDate" control={control} rules={{ required: true }} render={({ field, fieldState }) => (
-          <Calendar id={field.sellDate} {...field} dateFormat="dd/mm/yy" onChange={(e) => field.onChange(e.value)} className={classNames({ 'w-full p-invalid': fieldState.error })}></Calendar>
-          )} />
-          <label htmlFor="endDate">End Date</label>
-        </span>
+            <label htmlFor="symbol" className={classNames({ 'p-error': errors.symbol })}>Symbol</label>
+          </span>
+          {getFormErrorMessage('symbol')}
+        </div>
 
+        <div className="w-full">
+          <span className="p-float-label">
+          <Controller name="tradeType" control={control} rules={{ required: 'Please select trade type.' }} render={({ field, fieldState }) => (
+          <Dropdown id={field.tradeType} {...field} value={field.value} options={typeOptions} onChange={(e) => field.onChange(e.value)} optionLabel="name" placeholder="Select Type" className={`w-full ${classNames({ 'p-invalid': fieldState.error })}`} />
+          
+          )} />
+          </span>
+          {getFormErrorMessage('tradeType')}
+        </div>
+      </div>
+
+      <div className="block sm:flex pt-5">
+        <div className="w-full mr-4 mb-4 sm:mb-0">
+          <span className="p-float-label">
+          <Controller name="quantity" control={control} rules={{ required: 'Quantity is required.' }} render={({ field, fieldState }) => (
+            <InputText id={field.quantity} value={field.value} onChange={field.onChange} className={`w-full ${classNames({ 'p-invalid': fieldState.error })}`} />
+            )} />
+            <label htmlFor="quantity" className={classNames({ 'p-error': errors.quantity })}>Quantity</label>
+          </span>
+          {getFormErrorMessage('quantity')}
+        </div>
+
+        <div className="w-full mr-4 mb-4 sm:mb-0">
+          <span className="p-float-label">
+            <Controller name="buyValue" control={control} rules={{ required: 'Buy Value is required.' }} render={({ field, fieldState }) => (
+              <InputText id={field.buyValue} value={field.value} onChange={field.onChange} className={`w-full ${classNames({ 'p-invalid': fieldState.error })}`} />
+              )} />
+              <label htmlFor="buyValue" className={classNames({ 'p-error': errors.buyValue })}>Value1</label>
+          </span>
+          {getFormErrorMessage('buyValue')}
+        </div>
+
+        <div className="w-full">
+          <span className="p-float-label">
+          <Controller name="sellValue" control={control} rules={{ required: 'Sell Value is required.' }} render={({ field, fieldState }) => (
+            <InputText id={field.sellValue} value={field.value} onChange={field.onChange} className={`w-full ${classNames({ 'p-invalid': fieldState.error })}`} />
+            )} />
+            <label htmlFor="sellValue" className={classNames({ 'p-error': errors.sellValue })}>Value 2</label>
+          </span>
+          {getFormErrorMessage('sellValue')}
+        </div>
+      </div>
+
+
+      <div className="block sm:flex pt-5">
+        {/* Use selectionMode="range" instead of using start and end dates  */}
+        <div className="w-full mr-4 mb-4 sm:mb-0">
+          <span className="p-float-label">
+          <Controller name="buyDate" control={control} rules={{ required: 'Buy Date is required.' }} render={({ field, fieldState }) => (
+            <Calendar id={field.buyDate} value={field.value} dateFormat="dd/mm/yy" onChange={(e) => field.onChange(e.value)} className={`w-full ${classNames({ 'p-invalid': fieldState.error })}`}></Calendar>
+              )} />
+            <label htmlFor="buyDate" className={classNames({ 'p-error': errors.buyDate })}>Start Date</label>
+          </span>
+          {getFormErrorMessage('buyDate')}
+        </div>
+
+        <div className="w-full">
+          <span className="p-float-label">
+          <Controller name="sellDate" control={control} rules={{ required: 'Sell Date is required.' }} render={({ field, fieldState }) => (
+            <Calendar id={field.sellDate} value={field.value} dateFormat="dd/mm/yy" onChange={(e) => field.onChange(e.value)} className={`w-full ${classNames({ 'p-invalid': fieldState.error })}`}></Calendar>
+            )} />
+            <label htmlFor="sellDate" className={classNames({ 'p-error': errors.sellDate })}>End Date</label>
+          </span>
+          {getFormErrorMessage('sellDate')}
+        </div>
       </div>
       <div>
 
       </div>
       <div className="flex pt-8">
-        <div className="file-upload-container w-full relative border border-neutral-500 rounded overflow-hidden flex">
+        <div className="h-full w-full relative border border-neutral-500 rounded overflow-hidden block sm:flex sm:items-center">
           <div className="absolute bottom-0 z-20 w-full">
             <ProgressBar value={per} style={{ height: '6px', borderRadius: 0 }} color='slate-90'></ProgressBar>
           </div>
 
-          <label className="h-60 w-1/2 flex justify-center items-center flex-col cursor-pointer px-4 py-3 z-10 relative bg-black/50" htmlFor="imageUpload">
+          <label className="h-60 w-full sm:w-1/2 flex justify-center items-center flex-col cursor-pointer px-4 py-3 z-10 relative bg-black/50 text-center" htmlFor="imageUpload">
             <i className="fas fa-upload text-5xl text-gray-200 mb-2"></i>
             Click here to upload image</label>
           <input type="file" id='imageUpload' className='hidden' accept="image/png, image/gif, image/jpeg" onChange={(e) => setFile(e.target.files[0])} />
           {
             Object.keys(image).length !== 0 ?  //to check empty object
-            <img src={ image.img } alt={image.img} className='w-1/2 h-60 object-cover' />
-            : <i className="far fa-image text-9xl h-full w-1/2 flex items-center justify-center"></i>
+            <img src={ image.img } alt={image.img} className='w-full sm:w-1/2 h-60 object-cover' />
+            : <i className="far fa-image text-9xl h-full w-full h-60 sm:w-1/2 flex items-center justify-center"></i>
           }
         </div>
 
       </div>
-      {/* </form> */}
-        </Dialog>
+      </Dialog>
     </div>
   )
-})
+}
 
 export default NewColumn;

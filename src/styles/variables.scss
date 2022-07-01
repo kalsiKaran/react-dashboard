@@ -30,7 +30,7 @@ $grays: (
 // fusv-enable
 
 // scss-docs-start color-variables
-$blue:    #0d6efd !default;
+$blue:    #3b82f6 !default;
 $indigo:  #6610f2 !default;
 $purple:  #6f42c1 !default;
 $pink:    #d63384 !default;
@@ -45,5 +45,5 @@ $cyan:    #0dcaf0 !default;
   background: transparent
 }
 .p-progressbar .p-progressbar-value{
-  background: rgb(59 130 246 / var(--tw-bg-opacity)) !important;
+  background: $blue !important;
 }
