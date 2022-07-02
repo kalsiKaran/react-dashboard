@@ -147,13 +147,14 @@ const getFormErrorMessage = (name) => {
       <Dialog header={dataStatus === 'add' ? 'Add New' : 'Update Columns'}
             visible={showDialog}
             draggable={false}
-            style={{width: '50vw'}}
+            // breakpoints={{'960px': '75vw', '640px': '100vw'}} //not working
+            // style={{width: '50vw'}}
             footer={renderFooter('displayBasic')} 
             onHide={() => setShowDialog(false)}
             dismissableMask={true} 
             >
         
-      <div className="block sm:flex pt-5">
+      <div className="block sm:flex">
         <div className='w-full mr-4 mb-4 sm:mb-0'>
           <span className="p-float-label">
           <Controller name="symbol" control={control} rules={{ required: 'Symbol is required.' }} render={({ field, fieldState }) => (
