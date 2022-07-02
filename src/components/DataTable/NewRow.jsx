@@ -16,7 +16,7 @@ import { ref as imageRef, uploadBytesResumable, getDownloadURL } from "firebase/
 import { useStateContext } from '../../contexts/ContextProvider';
 
 
-function NewColumn() {
+function NewRow() {
   
   const { setShowDialog, rowData, dataStatus, setLoading, showDialog } = useStateContext();
 
@@ -257,4 +257,4 @@ const getFormErrorMessage = (name) => {
   )
 }
 
-export default NewColumn;
+export default NewRow;

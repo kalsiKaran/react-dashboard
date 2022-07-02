@@ -4,14 +4,16 @@ import { Column } from 'primereact/column';
 import "primereact/resources/themes/md-dark-indigo/theme.css";
 import 'primereact/resources/primereact.css';
 import 'primeicons/primeicons.css';
+import { FilterMatchMode } from 'primereact/api';
 import { ContextMenu } from 'primereact/contextmenu';
-
+import { InputText } from 'primereact/inputtext';
 import '../../styles/tables.scss';
-import NewColumn from './NewColumn';
+import NewRow from './NewRow';
 import { db } from '../../data/firebase';
 import { collection, doc, onSnapshot } from "firebase/firestore";
 import { deleteDoc } from 'firebase/firestore/lite';
 import { useStateContext } from '../../contexts/ContextProvider';
+import { Image } from 'primereact/image';
 
 
 function Table() {
@@ -22,6 +24,8 @@ function Table() {
     const [data, setData] = useState([]);
     const [selectedDataRow, setSelectedDataRow] = useState(null);
     const cm = useRef(null);
+    const [globalFilterValue, setGlobalFilterValue] = useState('');
+    const [filters, setFilters] = useState(null);
 
     // context menu model
     const menuModel = [
@@ -54,6 +58,7 @@ function Table() {
         // console.log(error);
       }
     );
+    initFilters();
 
     return () => {
       unsub();
@@ -108,26 +113,72 @@ function Table() {
 
     // table image template
     const imageBodyTemplate = (rowData) => {
-        return <img src={`${rowData.image.img}`} onError={(e) => e.target.src='https://www.primefaces.org/wp-content/uploads/2020/05/placeholder.png'} alt={rowData.image} className="product-image" />
+        return <Image src={`${rowData.image.img}`} onError={(e) => e.target.src='https://www.primefaces.org/wp-content/uploads/2020/05/placeholder.png'} alt={rowData.image} className="product-image" preview />
+
     }
+
+    const initFilters = () => {
+      setFilters({
+          'global': { value: null, matchMode: FilterMatchMode.CONTAINS }
+      });
+      setGlobalFilterValue('');
+  }
+
+    const onGlobalFilterChange = (e) => {
+      const value = e.target.value;
+      let _filters = { ...filters };
+      _filters['global'].value = value;
+      
+      setFilters(_filters);
+      setGlobalFilterValue(value);
+  }
+
+  //   const renderHeader = () => {
+  //     return (
+  //         <div className="flex justify-content-between">
+  //             <span className="p-input-icon-left">
+  //                 <i className="pi pi-search" />
+  //                 <InputText value={globalFilterValue} onChange={onGlobalFilterChange} placeholder="Keyword Search" />
+  //             </span>
+  //         </div>
+  //     )
+  // }
+
+  // const header = renderHeader();
     
 
   return (
     <div className='primary-box w-full text-dark dark:text-white'>
         <div className="flex items-center justify-between">
             <h1 className='font-medium text-xl'>Data Table</h1>
-            <button className='btn-outline-primary border-solid border-2 border-blue-500  hover:bg-blue-500 transition-all' onClick={() => addNew()}><i className="fas fa-add mr-2"></i>Add New</button>
+            <div className='h-[2.5rem]'>
+              <span className="p-input-icon-left h-full">
+                <i className="pi pi-search" />
+                <InputText value={globalFilterValue} onChange={onGlobalFilterChange} placeholder="Search" className='p-inputtext-sm h-full !py-2' />
+              </span>
+              <button className='btn-outline-primary border-solid border-2 border-blue-500  hover:bg-blue-500 transition-all ml-5 h-full' onClick={() => addNew()}><i className="fas fa-add mr-2"></i>Add New</button>
+            </div>
         </div>
 
         {/* dialog for add new row */}
-        {showDialog && <NewColumn />}
+        {showDialog && <NewRow />}
 
         {/* context menu for table */}
         <ContextMenu model={menuModel} ref={cm} onHide={() => setSelectedDataRow(null)}/>
 
         {/* data table */}
         <div className='mt-8'>
-            <DataTable value={data} rowClassName='table-row' responsiveLayout="stack" breakpoint="1080px" scrollHeight="570px" style={{overflow: 'hidden auto'}} contextMenuSelection={data} onContextMenuSelectionChange={e => setSelectedDataRow(e.value)} onContextMenu={e => cm.current.show(e.originalEvent)} >
+            <DataTable value={data} rowClassName='table-row'
+             responsiveLayout="stack"
+             breakpoint="1080px"
+             scrollHeight="570px"
+            //  header={header}
+             dataKey="id"
+             filters={filters}
+             style={{overflow: 'hidden auto'}}
+             contextMenuSelection={data}
+             onContextMenuSelectionChange={e => setSelectedDataRow(e.value)}
+             onContextMenu={e => cm.current.show(e.originalEvent)} >
 
                 <Column field="symbol" header="Name" sortable/>
                 <Column field="tradeType" header="Type" body={typeTemplate} sortable/>
