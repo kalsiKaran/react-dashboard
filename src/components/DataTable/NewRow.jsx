@@ -154,7 +154,7 @@ const getFormErrorMessage = (name) => {
             dismissableMask={true} 
             >
         
-      <div className="block sm:flex">
+      <div className="block sm:flex pt-3">
         <div className='w-full mr-4 mb-4 sm:mb-0'>
           <span className="p-float-label">
           <Controller name="symbol" control={control} rules={{ required: 'Symbol is required.' }} render={({ field, fieldState }) => (
