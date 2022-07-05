@@ -65,13 +65,13 @@ function NewRow() {
 
   // function for adding new row 
   const addRow = async (e) => {
+    setShowDialog(false);
     try {
       await setDoc(doc(usercollection), {
         formData: e,
         image: image,
         timeStamp: serverTimestamp(),
       });
-      setShowDialog(false);
     } catch (err) {
       console.log(err);
     }
