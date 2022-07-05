@@ -47,8 +47,7 @@ function Table() {
                         quantity: doc.data().formData.quantity,
                         buyValue: doc.data().formData.buyValue,
                         sellValue: doc.data().formData.sellValue,
-                        buyDate: doc.data().formData.buyDate.toDate(),
-                        sellDate: doc.data().formData.sellDate.toDate(),
+                        date: doc.data().formData.date,
                         image: doc.data().image
              });
         });
@@ -101,7 +100,15 @@ function Table() {
 
     // table date body template 
     const dateBodyTemplate = (rowData) => {
-        return formatDate(rowData);
+      let fromDate, toDate;
+      fromDate = rowData[0].toDate();
+      fromDate = formatDate(fromDate)
+      if(rowData[1]){
+        toDate = rowData[1].toDate();
+        toDate = formatDate(toDate)
+        return <span>{fromDate} - {toDate}</span>
+      }
+      return <span>{fromDate}</span>
     }
 
     // table winOrLoss template 
@@ -132,19 +139,6 @@ function Table() {
       setFilters(_filters);
       setGlobalFilterValue(value);
   }
-
-  //   const renderHeader = () => {
-  //     return (
-  //         <div className="flex justify-content-between">
-  //             <span className="p-input-icon-left">
-  //                 <i className="pi pi-search" />
-  //                 <InputText value={globalFilterValue} onChange={onGlobalFilterChange} placeholder="Keyword Search" />
-  //             </span>
-  //         </div>
-  //     )
-  // }
-
-  // const header = renderHeader();
     
 
   return (
@@ -172,7 +166,6 @@ function Table() {
              responsiveLayout="stack"
              breakpoint="1080px"
              scrollHeight="570px"
-            //  header={header}
              dataKey="id"
              filters={filters}
              style={{overflow: 'hidden auto'}}
@@ -186,9 +179,10 @@ function Table() {
                 <Column field="buyValue" header="value1" sortable/>
                 <Column field="sellValue" header="value2" sortable/>
                 <Column field="winOrLoss" header="Total" body={winOrLossTemplate} sortable/>
-                <Column field="buyDate" header="Date1" dataType="date" 
+                {/* <Column field="buyDate" header="Date1" dataType="date" 
                 body={e => dateBodyTemplate(e.buyDate)} sortable/>
-                <Column field="sellDate" header="Date2" dataType="date" body={e => dateBodyTemplate(e.sellDate)} sortable/>
+                <Column field="sellDate" header="Date2" dataType="date" body={e => dateBodyTemplate(e.sellDate)} sortable/> */}
+                <Column field="date" header="Date" dataType="date" body={e => dateBodyTemplate(e.date)} sortable/>
                 <Column field="image" header="Image" body={imageBodyTemplate} />
             </DataTable>
         </div>

@@ -32,22 +32,26 @@ function NewRow() {
     quantity: '',
     buyValue: '',
     sellValue: '',
-    buyDate: null,
-    sellDate: null,
+    date: null,
     image: {},
   };
 
   // set row data to input fields if updating
     if(dataStatus === 'update'){
+      let date;
+      if(rowData.date[1]){
+        date = [rowData.date[0].toDate(), rowData.date[1].toDate()]
+      }else{
+        date = [rowData.date[0].toDate()]
+      }
       defaultValues = {
         symbol: rowData.symbol,
         tradeType: rowData.tradeType,
         quantity: rowData.quantity,
         buyValue: rowData.buyValue,
         sellValue: rowData.sellValue,
-        buyDate: rowData.buyDate,
-        sellDate: rowData.sellDate,
         image: rowData.image,
+        date: date
       }
     }
 
@@ -210,25 +214,14 @@ const getFormErrorMessage = (name) => {
 
 
       <div className="block sm:flex pt-5">
-        {/* Use selectionMode="range" instead of using start and end dates  */}
-        <div className="w-full mr-4 mb-4 sm:mb-0">
-          <span className="p-float-label">
-          <Controller name="buyDate" control={control} rules={{ required: 'Buy Date is required.' }} render={({ field, fieldState }) => (
-            <Calendar id={field.buyDate} value={field.value} dateFormat="dd/mm/yy" onChange={(e) => field.onChange(e.value)} className={`w-full ${classNames({ 'p-invalid': fieldState.error })}`}></Calendar>
-              )} />
-            <label htmlFor="buyDate" className={classNames({ 'p-error': errors.buyDate })}>Start Date</label>
-          </span>
-          {getFormErrorMessage('buyDate')}
-        </div>
-
         <div className="w-full">
           <span className="p-float-label">
-          <Controller name="sellDate" control={control} rules={{ required: 'Sell Date is required.' }} render={({ field, fieldState }) => (
-            <Calendar id={field.sellDate} value={field.value} dateFormat="dd/mm/yy" onChange={(e) => field.onChange(e.value)} className={`w-full ${classNames({ 'p-invalid': fieldState.error })}`}></Calendar>
+          <Controller name="date" control={control} rules={{ required: 'Date is required.' }} render={({ field, fieldState }) => (
+            <Calendar id={field.date} value={field.value} selectionMode='range' dateFormat="mm/dd/yy" onChange={(e) => field.onChange(e.value)} className={`w-full ${classNames({ 'p-invalid': fieldState.error })}`}></Calendar>
             )} />
-            <label htmlFor="sellDate" className={classNames({ 'p-error': errors.sellDate })}>End Date</label>
+            <label htmlFor="date" className={classNames({ 'p-error': errors.sellDate })}>Date</label>
           </span>
-          {getFormErrorMessage('sellDate')}
+          {getFormErrorMessage('date')}
         </div>
       </div>
       <div>
