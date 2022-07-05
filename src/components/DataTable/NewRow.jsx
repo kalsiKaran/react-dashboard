@@ -184,7 +184,7 @@ const getFormErrorMessage = (name) => {
         <div className="w-full mr-4 mb-4 sm:mb-0">
           <span className="p-float-label">
           <Controller name="quantity" control={control} rules={{ required: 'Quantity is required.' }} render={({ field, fieldState }) => (
-            <InputText id={field.quantity} value={field.value} onChange={field.onChange} className={`w-full ${classNames({ 'p-invalid': fieldState.error })}`} />
+            <InputText id={field.quantity} value={field.value} onChange={field.onChange} keyfilter="num" className={`w-full ${classNames({ 'p-invalid': fieldState.error })}`} />
             )} />
             <label htmlFor="quantity" className={classNames({ 'p-error': errors.quantity })}>Quantity</label>
           </span>
@@ -194,7 +194,7 @@ const getFormErrorMessage = (name) => {
         <div className="w-full mr-4 mb-4 sm:mb-0">
           <span className="p-float-label">
             <Controller name="buyValue" control={control} rules={{ required: 'Buy Value is required.' }} render={({ field, fieldState }) => (
-              <InputText id={field.buyValue} value={field.value} onChange={field.onChange} className={`w-full ${classNames({ 'p-invalid': fieldState.error })}`} />
+              <InputText id={field.buyValue} value={field.value} onChange={field.onChange} keyfilter="num" className={`w-full ${classNames({ 'p-invalid': fieldState.error })}`} />
               )} />
               <label htmlFor="buyValue" className={classNames({ 'p-error': errors.buyValue })}>Value1</label>
           </span>
@@ -204,7 +204,7 @@ const getFormErrorMessage = (name) => {
         <div className="w-full">
           <span className="p-float-label">
           <Controller name="sellValue" control={control} rules={{ required: 'Sell Value is required.' }} render={({ field, fieldState }) => (
-            <InputText id={field.sellValue} value={field.value} onChange={field.onChange} className={`w-full ${classNames({ 'p-invalid': fieldState.error })}`} />
+            <InputText id={field.sellValue} value={field.value} onChange={field.onChange} keyfilter="num" className={`w-full ${classNames({ 'p-invalid': fieldState.error })}`} />
             )} />
             <label htmlFor="sellValue" className={classNames({ 'p-error': errors.sellValue })}>Value 2</label>
           </span>
