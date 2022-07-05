@@ -26,6 +26,7 @@ function Table() {
     const cm = useRef(null);
     const [globalFilterValue, setGlobalFilterValue] = useState('');
     const [filters, setFilters] = useState(null);
+    const [selectedRows, setSelectedRows] = useState(null)
 
     // context menu model
     const menuModel = [
@@ -168,11 +169,13 @@ function Table() {
              scrollHeight="570px"
              dataKey="id"
              filters={filters}
+             selection={selectedRows} 
+             onSelectionChange={e => setSelectedRows(e.value)}
              style={{overflow: 'hidden auto'}}
              contextMenuSelection={data}
              onContextMenuSelectionChange={e => setSelectedDataRow(e.value)}
              onContextMenu={e => cm.current.show(e.originalEvent)} >
-
+                <Column selectionMode="multiple" headerStyle={{width: '3em'}}></Column>
                 <Column field="symbol" header="Name" sortable/>
                 <Column field="tradeType" header="Type" body={typeTemplate} sortable/>
                 <Column field="quantity" header="Quantity" sortable/>

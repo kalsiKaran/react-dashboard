@@ -169,7 +169,7 @@ const getFormErrorMessage = (name) => {
           {getFormErrorMessage('symbol')}
         </div>
 
-        <div className="w-full">
+        <div className="w-full mr-4 mb-4 sm:mb-0">
           <span className="p-float-label">
           <Controller name="tradeType" control={control} rules={{ required: 'Please select trade type.' }} render={({ field, fieldState }) => (
           <Dropdown id={field.tradeType} {...field} value={field.value} options={typeOptions} onChange={(e) => field.onChange(e.value)} optionLabel="name" placeholder="Select Type" className={`w-full ${classNames({ 'p-invalid': fieldState.error })}`} />
@@ -178,10 +178,7 @@ const getFormErrorMessage = (name) => {
           </span>
           {getFormErrorMessage('tradeType')}
         </div>
-      </div>
-
-      <div className="block sm:flex pt-5">
-        <div className="w-full mr-4 mb-4 sm:mb-0">
+        <div className="w-full">
           <span className="p-float-label">
           <Controller name="quantity" control={control} rules={{ required: 'Quantity is required.' }} render={({ field, fieldState }) => (
             <InputText id={field.quantity} value={field.value} onChange={field.onChange} keyfilter="money" className={`w-full ${classNames({ 'p-invalid': fieldState.error })}`} />
@@ -190,6 +187,9 @@ const getFormErrorMessage = (name) => {
           </span>
           {getFormErrorMessage('quantity')}
         </div>
+      </div>
+
+      <div className="block sm:flex pt-5">
 
         <div className="w-full mr-4 mb-4 sm:mb-0">
           <span className="p-float-label">
@@ -201,7 +201,7 @@ const getFormErrorMessage = (name) => {
           {getFormErrorMessage('buyValue')}
         </div>
 
-        <div className="w-full">
+        <div className="w-full mr-4 mb-4 sm:mb-0">
           <span className="p-float-label">
           <Controller name="sellValue" control={control} rules={{ required: 'Sell Value is required.' }} render={({ field, fieldState }) => (
             <InputText id={field.sellValue} value={field.value} onChange={field.onChange} keyfilter="money" className={`w-full ${classNames({ 'p-invalid': fieldState.error })}`} />
@@ -210,10 +210,7 @@ const getFormErrorMessage = (name) => {
           </span>
           {getFormErrorMessage('sellValue')}
         </div>
-      </div>
 
-
-      <div className="block sm:flex pt-5">
         <div className="w-full">
           <span className="p-float-label">
           <Controller name="date" control={control} rules={{ required: 'Date is required.' }} render={({ field, fieldState }) => (
