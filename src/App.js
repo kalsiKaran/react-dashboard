@@ -8,7 +8,7 @@ import Table from './components/DataTable/Table';
 import Charts from './components/Charts/Charts';
 
 function App() {
-  const { setCurrentMode, currentMode } = useStateContext();
+  const { setCurrentMode, currentMode, activeMenu, setActiveMenu } = useStateContext();
 
   useEffect(() => {
     // const currentThemeColor = localStorage.getItem('colorMode');
@@ -28,9 +28,10 @@ function App() {
       <BrowserRouter>
       <div className="App">
         <div className='flex routes-container'>
+        <div className={`toggle-menu hidden text-white dark:text-dark z-20 fas ${activeMenu ? 'fa-close' : 'fa-bars'}`} onClick={() => setActiveMenu(!activeMenu)}></div>
         <Sidebar />
         <Routes>
-          <Route path="/" element={<Navigate to="/dashboard" />} />
+          <Route path="/" element={<Navigate to="/data-table" />} />
           <Route path="/dashboard" element={(<Dashboard />)} />
           <Route path="/chart" element={(<Charts />)} />
           <Route path="/data-table" element={(<Table />)} />

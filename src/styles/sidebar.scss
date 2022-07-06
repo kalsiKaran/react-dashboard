@@ -38,3 +38,33 @@
 
     }
 }
+
+@media (orientation: portrait) {
+    .sidebar{
+        position: absolute;
+        width: 60%;
+        z-index: 10;
+        top: 1rem;
+        right: 0;
+        height: auto;
+        margin-right: 1rem;
+
+        ul{
+            height: 100%;
+            width: 100%;
+
+            li{
+                text-align: left;
+                margin-top: 1rem;
+                margin-bottom: 0;
+                a{
+                    padding: 0.5rem 1rem;
+
+                    span{
+                        letter-spacing: 3px;
+                    }
+                }
+            }
+        }
+    }
+}

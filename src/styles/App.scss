@@ -41,7 +41,7 @@ input,
 }
 
 .p-dropdown-panel .p-dropdown-items .p-dropdown-item.p-highlight, .p-datatable .p-datatable-tbody > tr.p-highlight{
-    background-color: rgba($blue, 5%) !important;
+    background-color: rgba($white, 10%) !important;
 }
 
 .p-checkbox .p-checkbox-box.p-highlight{
@@ -82,5 +82,31 @@ input,
     border-radius: 10px;
     &:hover{
         background-color: $gray-600;
+    }
+}
+
+@media (orientation: portrait) {
+    .routes-container{
+        padding: 0;
+    }
+
+    .primary-box{
+        padding: 2rem 1rem;
+        border-radius: 0;
+    }
+
+    td.p-selection-column{
+        display: none !important;
+    }
+
+    .p-dialog{
+        width: 90%;
+    }
+    .toggle-menu{
+        display: block;
+        position: absolute;
+        font-size: 1.5rem;
+        top: 2rem;
+        right: 1rem;
     }
 }

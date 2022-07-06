@@ -18,7 +18,7 @@ import { Image } from 'primereact/image';
 
 function Table() {
 
-    const { showDialog, setShowDialog, setDataStatus, setRowData, loading, setLoading } = useStateContext();
+    const { showDialog, setShowDialog, setDataStatus, setRowData, loading, setLoading, activeMenu, setActiveMenu } = useStateContext();
 
     const usercollection = collection(db, "tradeData")
     const [data, setData] = useState([]);
@@ -144,8 +144,8 @@ function Table() {
     
 
   return (
-    <div className='primary-box w-full text-dark dark:text-white'>
-        <div className="flex items-center justify-between">
+    <div className='primary-box h-[calc(100vh - 4rem)] w-full text-dark dark:text-white'>
+        <div className="hidden items-center justify-between md:flex">
             <h1 className='font-medium text-xl'>Table</h1>
             <div className='h-[2.5rem]'>
               <span className="p-input-icon-left h-full">
@@ -155,6 +155,18 @@ function Table() {
               <button className='btn-outline-primary border-solid border-2 border-blue-500  hover:bg-blue-500 transition-all ml-5 h-full' onClick={() => addNew()}><i className="fas fa-add mr-2"></i>Add New</button>
             </div>
         </div>
+
+        {/* for mobile view */}
+          <div className="flex items-center justify-between mb-3 md:hidden">
+            <h1 className='font-medium text-xl'>Table</h1>
+          </div>
+          <div className='h-[2.5rem] flex md:hidden'>
+            <span className="p-input-icon-left h-full w-full">
+              <i className="pi pi-search" />
+              <InputText value={globalFilterValue} onChange={onGlobalFilterChange} placeholder="Search" className='p-inputtext-sm w-full h-full !py-2' />
+            </span>
+            <button className='btn-outline-primary border-solid border-2 border-blue-500  hover:bg-blue-500 transition-all ml-3 h-full' onClick={() => addNew()}><i className="fas fa-add"></i></button>
+          </div>
 
         {/* dialog for add new row */}
         {showDialog && <NewRow />}
@@ -167,7 +179,7 @@ function Table() {
             <DataTable value={data} rowClassName='table-row'
              responsiveLayout="stack"
              breakpoint="1080px"
-             scrollHeight="570px"
+             scrollHeight="calc(100vh - 11rem)"
              dataKey="id"
              filters={filters}
              selection={selectedRows} 
