@@ -43,12 +43,13 @@ function Table() {
         let list = [];
         snapShot.docs.forEach((doc) => {
           list.push({ id: doc.id,
-                        symbol: doc.data().formData.symbol,
-                        tradeType: doc.data().formData.tradeType,
-                        quantity: doc.data().formData.quantity,
-                        buyValue: doc.data().formData.buyValue,
-                        sellValue: doc.data().formData.sellValue,
-                        date: doc.data().formData.date,
+                        ...doc.data().formData,
+                        // symbol: doc.data().formData.symbol,
+                        // tradeType: doc.data().formData.tradeType,
+                        // quantity: doc.data().formData.quantity,
+                        // buyValue: doc.data().formData.buyValue,
+                        // sellValue: doc.data().formData.sellValue,
+                        // date: doc.data().formData.date,
                         image: doc.data().image
              });
         });
@@ -145,7 +146,7 @@ function Table() {
   return (
     <div className='primary-box w-full text-dark dark:text-white'>
         <div className="flex items-center justify-between">
-            <h1 className='font-medium text-xl'>Data Table</h1>
+            <h1 className='font-medium text-xl'>Table</h1>
             <div className='h-[2.5rem]'>
               <span className="p-input-icon-left h-full">
                 <i className="pi pi-search" />
