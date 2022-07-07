@@ -74,6 +74,7 @@ function Table() {
 
     // delete row in datatable 
     const deleteDataRow = async(e)=>{
+        setSelectedRows([])
         const userDoc = doc(db, "tradeData", e.id);
         await deleteDoc(userDoc);
     }
@@ -120,7 +121,7 @@ function Table() {
 
     // table winOrLoss template 
     const winOrLossTemplate = (rowData) => {
-        return <span className={`py-1 px-2 rounded text-xs bg-${(rowData.buyValue >= rowData.sellValue ? 'danger' : 'success')}`}>
+        return <span className={`py-1 px-2 rounded text-xs bg-${(rowData.sellValue <= rowData.buyValue ? 'danger' : 'success')}`}>
           {rowData.quantity * (rowData.sellValue - rowData.buyValue)}
         </span>;
     }
@@ -153,7 +154,7 @@ function Table() {
   
 
   return (
-    <div className='primary-box w-full text-dark dark:text-white'>
+    <div className='primary-box w-full text-dark dark:text-white h-[100vh] sm:h-auto'>
         <div className="hidden items-center justify-between md:flex">
             <h1 className='font-medium text-xl'>Table</h1>
             <div className='h-[2.5rem]'>
