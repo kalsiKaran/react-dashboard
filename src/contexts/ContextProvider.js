@@ -20,6 +20,7 @@ export const ContextProvider = ({ children }) => {
   const [themeSettings, setThemeSettings] = useState(false);
   const [activeMenu, setActiveMenu] = useState(false);
   const [isClicked, setIsClicked] = useState(initialState);
+  const [selectedRows, setSelectedRows] = useState([])
 
   const setMode = (e) => {
     setCurrentMode(e);
@@ -35,7 +36,7 @@ export const ContextProvider = ({ children }) => {
 
   return (
     // eslint-disable-next-line react/jsx-no-constructed-context-values
-    <StateContext.Provider value={{ currentColor, currentMode, activeMenu, screenSize, setScreenSize, handleClick, isClicked, initialState, setIsClicked, setActiveMenu, setCurrentColor, setCurrentMode, setMode, setColor, themeSettings, setThemeSettings, showDialog, setShowDialog, dataStatus, setDataStatus, rowData, setRowData, loading, setLoading }}>
+    <StateContext.Provider value={{ currentColor, currentMode, activeMenu, screenSize, setScreenSize, handleClick, isClicked, initialState, setIsClicked, setActiveMenu, setCurrentColor, setCurrentMode, setMode, setColor, themeSettings, setThemeSettings, showDialog, setShowDialog, dataStatus, setDataStatus, rowData, setRowData, selectedRows, setSelectedRows, loading, setLoading }}>
       {children}
     </StateContext.Provider>
   );

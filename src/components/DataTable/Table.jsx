@@ -18,7 +18,7 @@ import { Image } from 'primereact/image';
 
 function Table() {
 
-    const { showDialog, setShowDialog, setDataStatus, setRowData, loading, setLoading, activeMenu, setActiveMenu } = useStateContext();
+    const { showDialog, setShowDialog, setDataStatus, setRowData, setLoading, selectedRows, setSelectedRows } = useStateContext();
 
     const usercollection = collection(db, "tradeData")
     const [data, setData] = useState([]);
@@ -26,7 +26,6 @@ function Table() {
     const cm = useRef(null);
     const [globalFilterValue, setGlobalFilterValue] = useState('');
     const [filters, setFilters] = useState(null);
-    const [selectedRows, setSelectedRows] = useState(null)
 
     // context menu model
     const menuModel = [
@@ -75,14 +74,20 @@ function Table() {
 
     // delete row in datatable 
     const deleteDataRow = async(e)=>{
-        setLoading(true);
         const userDoc = doc(db, "tradeData", e.id);
         await deleteDoc(userDoc);
-        setLoading(false)
+    }
+    
+    const deleteMultipleRows = () => {
+      selectedRows.forEach(async(e) => {
+        const userDoc = doc(db, "tradeData", e.id);
+        await deleteDoc(userDoc);
+      })
+      setSelectedRows([])
     }
 
     // add new data 
-    const addNew = ()=>{
+    const addNew = () => {
         setShowDialog(true);
         setDataStatus('add');
     }
@@ -141,10 +146,14 @@ function Table() {
       setFilters(_filters);
       setGlobalFilterValue(value);
   }
-    
+
+  useEffect(() => {
+    // console.log(selectedRows);
+  }, [selectedRows])
+  
 
   return (
-    <div className='primary-box h-[calc(100vh - 4rem)] w-full text-dark dark:text-white'>
+    <div className='primary-box w-full text-dark dark:text-white'>
         <div className="hidden items-center justify-between md:flex">
             <h1 className='font-medium text-xl'>Table</h1>
             <div className='h-[2.5rem]'>
@@ -152,21 +161,25 @@ function Table() {
                 <i className="pi pi-search" />
                 <InputText value={globalFilterValue} onChange={onGlobalFilterChange} placeholder="Search" className='p-inputtext-sm h-full !py-2' />
               </span>
+              {(selectedRows.length !== 0) && <button className='btn-outline-primary border-solid border-2 border-rose-500  hover:bg-rose-500 transition-all ml-5 h-full' onClick={() => deleteMultipleRows()}>
+                <i className="fas fa-trash-alt mr-2"></i>Delete
+              </button>}
               <button className='btn-outline-primary border-solid border-2 border-blue-500  hover:bg-blue-500 transition-all ml-5 h-full' onClick={() => addNew()}><i className="fas fa-add mr-2"></i>Add New</button>
             </div>
         </div>
 
         {/* for mobile view */}
-          <div className="flex items-center justify-between mb-3 md:hidden">
-            <h1 className='font-medium text-xl'>Table</h1>
-          </div>
-          <div className='h-[2.5rem] flex md:hidden'>
-            <span className="p-input-icon-left h-full w-full">
-              <i className="pi pi-search" />
-              <InputText value={globalFilterValue} onChange={onGlobalFilterChange} placeholder="Search" className='p-inputtext-sm w-full h-full !py-2' />
-            </span>
-            <button className='btn-outline-primary border-solid border-2 border-blue-500  hover:bg-blue-500 transition-all ml-3 h-full' onClick={() => addNew()}><i className="fas fa-add"></i></button>
-          </div>
+        <div className="flex items-center justify-between mb-3 md:hidden">
+          <h1 className='font-medium text-xl'>Table</h1>
+        </div>
+        <div className='h-[2.5rem] flex md:hidden'>
+          <span className="p-input-icon-left h-full w-full">
+            <i className="pi pi-search" />
+            <InputText value={globalFilterValue} onChange={onGlobalFilterChange} placeholder="Search" className='p-inputtext-sm w-full h-full !py-2' />
+          </span>
+          {(selectedRows.length !== 0) && <button className='btn-primary delete-btn bg-rose-500 bottom-20 hover:bg-rose-600 transition-all' onClick={() => deleteMultipleRows()}><i className="fas fa-trash-can"></i></button>}
+          <button className='btn-primary add-btn bg-blue-500 bottom-6 hover:bg-blue-600 transition-all' onClick={() => addNew()}><i className="fas fa-add"></i></button>
+        </div>
 
         {/* dialog for add new row */}
         {showDialog && <NewRow />}
@@ -182,7 +195,7 @@ function Table() {
              scrollHeight="calc(100vh - 11rem)"
              dataKey="id"
              filters={filters}
-             selection={selectedRows} 
+             selection={selectedRows}
              onSelectionChange={e => setSelectedRows(e.value)}
              style={{overflow: 'hidden auto'}}
              contextMenuSelection={data}

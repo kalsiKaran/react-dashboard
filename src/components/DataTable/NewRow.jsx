@@ -164,7 +164,7 @@ const getFormErrorMessage = (name) => {
           <Controller name="symbol" control={control} rules={{ required: 'Symbol is required.' }} render={({ field, fieldState }) => (
             <InputText id={field.symbol} value={field.value} onChange={field.onChange} className={`w-full ${classNames({ 'p-invalid': fieldState.error })}`} />
             )} />
-            <label htmlFor="symbol" className={classNames({ 'p-error': errors.symbol })}>Symbol</label>
+            <label htmlFor="symbol" className={classNames({ 'p-error': errors.symbol })}>Name</label>
           </span>
           {getFormErrorMessage('symbol')}
         </div>
