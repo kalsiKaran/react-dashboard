@@ -6,6 +6,7 @@ import './styles/App.scss';
 import Dashboard from './components/Dashboard';
 import Table from './components/DataTable/Table';
 import Charts from './components/Charts/Charts';
+import ImageGallery from './components/ImageGallery';
 
 function App() {
   const { setCurrentMode, currentMode, activeMenu, setActiveMenu } = useStateContext();
@@ -35,6 +36,7 @@ function App() {
           <Route path="/dashboard" element={(<Dashboard />)} />
           <Route path="/chart" element={(<Charts />)} />
           <Route path="/data-table" element={(<Table />)} />
+          <Route path="/image-gallery" element={(<ImageGallery />)} />
         </Routes>
         </div>
       </div>

@@ -15,6 +15,11 @@ export const links = [
         icon: 'fa-solid fa-table',
     },
     {
+        title: 'Image Gallery',
+        name: 'image-gallery',
+        icon: 'fa-solid fa-images',
+    },
+    {
         title: 'Settings',
         name: 'settings',
         icon: 'fa-solid fa-gear',

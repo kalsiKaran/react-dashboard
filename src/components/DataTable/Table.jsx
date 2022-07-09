@@ -121,7 +121,7 @@ function Table() {
 
     // table winOrLoss template 
     const winOrLossTemplate = (rowData) => {
-        return <span className={`py-1 px-2 rounded text-xs bg-${(rowData.sellValue <= rowData.buyValue ? 'danger' : 'success')}`}>
+        return <span className={`py-1 px-2 rounded text-xs bg-${(parseInt(rowData.sellValue) <= parseInt(rowData.buyValue) ? 'danger' : 'success')}`}>
           {rowData.quantity * (rowData.sellValue - rowData.buyValue)}
         </span>;
     }
@@ -209,9 +209,6 @@ function Table() {
                 <Column field="buyValue" header="value1" sortable/>
                 <Column field="sellValue" header="value2" sortable/>
                 <Column field="winOrLoss" header="Total" body={winOrLossTemplate} sortable/>
-                {/* <Column field="buyDate" header="Date1" dataType="date" 
-                body={e => dateBodyTemplate(e.buyDate)} sortable/>
-                <Column field="sellDate" header="Date2" dataType="date" body={e => dateBodyTemplate(e.sellDate)} sortable/> */}
                 <Column field="date" header="Date" dataType="date" body={e => dateBodyTemplate(e.date)} sortable/>
                 <Column field="image" header="Image" body={imageBodyTemplate} />
             </DataTable>
