@@ -46,18 +46,18 @@ let storageRef = ref(storage, "gs://react-dashboard-dd469.appspot.com");
   const getFromFirebase = () => {
     
     listAll(storageRef).then(function (res) {
-        
         res.items.forEach((imageRef) => {
             getDownloadURL(imageRef).then( url => {
                 // imgArr.push({img: url})
-                setImages((images) => [...images, url]);
+                if (images.indexOf(url) === -1) {
+                  setImages((images) => [...images, url]);
+                }
             })
         });
       })
       .catch(function (error) {
         console.log(error);
       });
-      setLoading(false)
     };
 
 useEffect(() => {
@@ -67,13 +67,10 @@ useEffect(() => {
 
   return (
     <div className='primary-box w-full text-dark dark:text-white h-[100vh] sm:h-auto'>
+        <h1 className='font-medium text-xl mb-5'>Image Gallery</h1>
         <div className="hidden items-center justify-between md:flex">
-            <h1 className='font-medium text-xl'>Image Gallery</h1>
             {images.map( image => {
-                // return console.log(image);
-                return <div key={image}>
-                        <img src={image} height="200" width="300" />
-                        </div>
+                return <div><img src={image} height="200" width="300" /></div>
             })}
         </div>
 
