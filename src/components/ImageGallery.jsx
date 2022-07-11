@@ -1,9 +1,9 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import "primereact/resources/themes/md-dark-indigo/theme.css";
 import 'primereact/resources/primereact.css';
 import 'primeicons/primeicons.css';
 import { db, storage } from '../data/firebase';
-import { ref, listAll, getDownloadURL } from 'firebase/storage';
+import { ref, listAll, getDownloadURL, deleteObject } from 'firebase/storage';
 import { collection, doc, onSnapshot } from "firebase/firestore";
 import { deleteDoc } from 'firebase/firestore/lite';
 import { useStateContext } from '../contexts/ContextProvider';
@@ -12,47 +12,25 @@ import { Image } from 'primereact/image';
 
 function ImageGallery() {
 
-    const { loading, setLoading } = useStateContext();
+  const { loading, setLoading } = useStateContext();
     
-    const [images, setImages] = useState([])
-    const usercollection = collection(db, "tradeData")
+  const [images, setImages] = useState([])
 
-    // get data from firebase
-//     useEffect(() => {
-//     // LISTEN (REALTIME)
-//     const unsub = onSnapshot(
-//       usercollection,
-//       (snapShot) => {
-//         let list = [];
-//         snapShot.docs.forEach((doc) => {
-//           list.push({ id: doc.id, image: doc.data().image
-//              });
-//         });
-//         setImages(list);
-//       },
-//       (error) => {
-//         // console.log(error);
-//       }
-//     );
+  let effectOnce = useRef(false);
 
-//     return () => {
-//       unsub();
-//     };
-//   }, []);
-
-let storageRef = ref(storage, "gs://react-dashboard-dd469.appspot.com");
+  let storageRef = ref(storage, "gs://react-dashboard-dd469.appspot.com");
 
 
   const getFromFirebase = () => {
-    
+    // setLoading(true);
     listAll(storageRef).then(function (res) {
         res.items.forEach((imageRef) => {
-            getDownloadURL(imageRef).then( url => {
-                // imgArr.push({img: url})
+          getDownloadURL(imageRef).then( url => {
                 if (images.indexOf(url) === -1) {
                   setImages((images) => [...images, url]);
                 }
             })
+            // setLoading(false)
         });
       })
       .catch(function (error) {
@@ -61,16 +39,38 @@ let storageRef = ref(storage, "gs://react-dashboard-dd469.appspot.com");
     };
 
 useEffect(() => {
-    getFromFirebase();
+  if(effectOnce.current === false){
+      getFromFirebase();
+      return() => {
+        effectOnce.current = true;
+      }
+    }
 }, [])
+
+
+
+const deleteFromFirebase = (url) => {
+  const imageRef = ref(storage, url);
+  // Delete the file
+    deleteObject(imageRef).then(() => {
+      // File deleted successfully
+    }).catch((error) => {
+      console.error(error);
+    });
+};
    
 
   return (
     <div className='primary-box w-full text-dark dark:text-white h-[100vh] sm:h-auto'>
         <h1 className='font-medium text-xl mb-5'>Image Gallery</h1>
         <div className="hidden items-center justify-between md:flex">
-            {images.map( image => {
-                return <div><img src={image} height="200" width="300" /></div>
+            {images.map( (image, i) => {
+              return <div key={i}>
+                        <Image src={image} height="200" width="300" preview />
+                        <button onClick={() => deleteFromFirebase(image)}>
+                          Delete
+                        </button>
+                     </div>
             })}
         </div>
 
