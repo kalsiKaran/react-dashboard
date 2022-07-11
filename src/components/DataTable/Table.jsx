@@ -92,6 +92,14 @@ function Table() {
       selectedRows.forEach(async(e) => {
         const userDoc = doc(db, "tradeData", e.id);
         await deleteDoc(userDoc);
+        
+        const imageRef = ref(storage, e.image.img);
+        // Delete the file
+          deleteObject(imageRef).then(() => {
+            // File deleted successfully
+          }).catch((error) => {
+            console.error(error);
+          });
       })
       setSelectedRows([])
     }
