@@ -8,12 +8,14 @@ import { collection, doc, onSnapshot, serverTimestamp, setDoc } from "firebase/f
 import { deleteDoc, updateDoc } from 'firebase/firestore/lite';
 import { useStateContext } from '../contexts/ContextProvider';
 import { Image } from 'primereact/image';
-
+import { Dialog } from 'primereact/dialog';
+import { ProgressBar } from 'primereact/progressbar';
 
 function ImageGallery() {
 
   const { loading, setLoading } = useStateContext();
     
+  const [dialogVisible, setDialogVisible] = useState(false)
   const [images, setImages] = useState([])
   const [file, setFile] = useState("");
   const [per, setPerc] = useState(null);
@@ -167,21 +169,53 @@ function ImageGallery() {
   }, []);
 
 
+  const renderFooter = () => {
+    return <div>
+      <button onClick={() => addRow()} disabled={(per < 100) ? true : false} className='btn btn-primary bg-blue-500 hover:bg-blue-600 transition-all disabled:opacity-50 disabled:bg-blue-500'>Upload</button>
+      <button onClick={() => setDialogVisible(false)} className='btn btn-primary bg-rose-700 hover:bg-red-800 transition-all'>Cancel</button>
+    </div>
+  }
+
   return (
     <div className='primary-box w-full text-dark dark:text-white h-[100vh] sm:h-auto'>
-        <h1 className='font-medium text-xl mb-5'>Image Gallery</h1>
         <div className="hidden items-center justify-between md:flex">
-        <input type="file" id='imageUpload' accept="image/png, image/gif, image/jpeg" onChange={(e) => setFile(e.target.files[0])} />
+          <h1 className='font-medium text-xl mb-5'>Image Gallery</h1>
+          <button onClick={() => setDialogVisible(true)}>upload</button>
+        </div>
+
+        <Dialog header="upload image"
+            visible={dialogVisible}
+            draggable={false}
+            // breakpoints={{'960px': '75vw', '640px': '100vw'}} //not working
+            style={{width: '50vw', overflow: 'hidden'}}
+            footer={renderFooter('displayBasic')} 
+            onHide={() => setDialogVisible(false)}
+            dismissableMask={true} 
+            >
+              <div className='flex border border-gray border-neutral-600 rounded overflow-hidden relative'>
+                <div className="absolute left-0 top-0 z-20 w-full">
+                  <ProgressBar value={per} style={{ height: '4px', borderRadius: 0 }} color='slate-90'></ProgressBar>
+                </div>
+              <label className="h-60 w-full sm:w-1/2 flex justify-center items-center flex-col cursor-pointer px-4 py-3 z-10 relative bg-black/50 text-center" htmlFor="imageUpload">
+                  <i className="fas fa-upload text-5xl text-gray-200 mb-2"></i>
+                  Click here to upload image</label>
+                <input type="file" id='imageUpload' className='hidden' accept="image/png, image/gif, image/jpeg" onChange={(e) => setFile(e.target.files[0])} />
+                {console.log(images)}
+                {
+                  Object.keys(images).length !== 0 ?  //to check empty object
+                  <img src={ images } alt={images} className='w-full sm:w-1/2 h-60 object-cover' />
+                  : <i className="far fa-image text-9xl h-full w-full h-60 sm:w-1/2 flex items-center justify-center"></i>
+                }
+              </div>
+            </Dialog>
+
             {data.map( (image, i) => {
               return <div key={i}>
                         <Image src={image.image} height="200" width="300" preview />
-                        <button onClick={() => deleteImageRow(image)}>delete</button>
+                        <div><button className='bg-rose-500 py-2 px-4 rounded' onClick={() => deleteImageRow(image)}>Delete</button></div>
                         {/* <button onClick={() => editImageRow(image.id)}>edit</button> */}
                      </div>
             })}
-            <button onClick={() => addRow()}>add</button>
-        </div>
-
     </div>
   )
 }
