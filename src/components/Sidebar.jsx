@@ -3,7 +3,7 @@ import { NavLink } from 'react-router-dom';
 import { links } from '../data/data';
 import {useStateContext} from '../contexts/ContextProvider';
 
-function Sidebar () {
+function  Sidebar () {
 
   // function for toggle between themes 
     const { activeMenu, setActiveMenu } = useStateContext();
@@ -33,7 +33,7 @@ function Sidebar () {
 
         {/* for mobile view */}
         <div className={`sidebar flex md:hidden origin-top-right transition-transform duration-300 ${activeMenu ? 'scale-100' : 'scale-0'}`}>
-        <ul className="text-white uppercase flex md:hidden items-center flex-col h-full w-[5rem] primary-box">
+        <ul className="text-white uppercase flex md:hidden items-center flex-col h-full w-[5rem] primary-box !rounded-xl">
           {links.map((link)=>{
             return <li className='link' key={link.name}>
               <NavLink to={`/${link.name}`} onClick={() => setActiveMenu(!activeMenu)} className={({ isActive }) => (isActive ? 'active' : '')}>

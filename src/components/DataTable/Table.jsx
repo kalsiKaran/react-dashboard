@@ -9,7 +9,8 @@ import { ContextMenu } from 'primereact/contextmenu';
 import { InputText } from 'primereact/inputtext';
 import '../../styles/tables.scss';
 import NewRow from './NewRow';
-import { db } from '../../data/firebase';
+import { db, storage } from '../../data/firebase';
+import { ref, deleteObject } from 'firebase/storage';
 import { collection, doc, onSnapshot } from "firebase/firestore";
 import { deleteDoc } from 'firebase/firestore/lite';
 import { useStateContext } from '../../contexts/ContextProvider';
@@ -77,6 +78,14 @@ function Table() {
         setSelectedRows([])
         const userDoc = doc(db, "tradeData", e.id);
         await deleteDoc(userDoc);
+
+        const imageRef = ref(storage, e.image.img);
+        // Delete the file
+          deleteObject(imageRef).then(() => {
+            // File deleted successfully
+          }).catch((error) => {
+            console.error(error);
+          });
     }
     
     const deleteMultipleRows = () => {
