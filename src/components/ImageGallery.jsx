@@ -10,40 +10,23 @@ import { useStateContext } from '../contexts/ContextProvider';
 import { Image } from 'primereact/image';
 import { Dialog } from 'primereact/dialog';
 import { ProgressBar } from 'primereact/progressbar';
+import { Editor } from 'primereact/editor';
+
 
 function ImageGallery() {
-
-  const { loading, setLoading } = useStateContext();
     
   const [dialogVisible, setDialogVisible] = useState(false)
   const [images, setImages] = useState([])
   const [file, setFile] = useState("");
   const [per, setPerc] = useState(null);
   const [data, setData] = useState([])
-
+  const [description, setDescription] = useState('');
+  const [infoDialog, setInfoDialog] = useState(false);
+  const [infoText, setInfoText] = useState("")
   const usercollection = collection(db, "images")
 
-  // let storageRef = ref(storage, "gs://react-dashboard-dd469.appspot.com/images");
 
-
-  // const getFromFirebase = () => {
-  //   // setLoading(true);
-  //   listAll(storageRef).then(function (res) {
-  //       res.items.forEach((imageRef) => {
-  //         getDownloadURL(imageRef).then( url => {
-  //               if (images.indexOf(url) === -1) {
-  //                 setImages((images) => [...images, url]);
-  //               }
-  //           })
-  //           // setLoading(false)
-  //       });
-  //     })
-  //     .catch(function (error) {
-  //       console.log(error);
-  //     });
-  //   };
-
-
+  // upload image file 
   useEffect(() => {
     const uploadFile = () => {
       setImages(images)
@@ -83,34 +66,12 @@ function ImageGallery() {
     file && uploadFile();
   }, [file]);
 
-  // useEffect(() => {
-  //   if(effectOnce.current === false){
-  //     getFromFirebase();
-  //     return() => {
-  //       effectOnce.current = true;
-  //     }
-  //   }
-  // }, [])
-
-
-  // useEffect(() => {
-  //   const deleteFromFirebase = () => {
-  //     const imageRef = ref(storage, deleteImages);
-  //     // Delete the file
-  //       deleteObject(imageRef).then(() => {
-  //         // File deleted successfully
-  //       }).catch((error) => {
-  //         console.error(error);
-  //       });
-  //   };
-  //   deleteImages && deleteFromFirebase()
-
-  // }, [deleteImages])
-
+  // add image row 
   const addRow = async (e) => {
     if(images.length){
     try {
       await setDoc(doc(usercollection), {
+        description: description,
         image: images,
         timeStamp: serverTimestamp(),
       });
@@ -119,17 +80,19 @@ function ImageGallery() {
     }
   }
     setImages([]);
+    setDescription('Enter description (optional)')
   }
 
   // function for updating rowdata 
-  // const editImageRow = async(id)=>{
-  //   const userDoc = doc(db, "images", id);
-  //   const updateRowData = {
-  //     image: images,
-  //     timeStamp: serverTimestamp(),
-  //   };
-  //   await updateDoc(userDoc, updateRowData);
-  // }
+  const editImageRow = async(id)=>{
+    const userDoc = doc(db, "images", id);
+    const updateRowData = {
+      description: description,
+      image: images,
+      timeStamp: serverTimestamp(),
+    };
+    await updateDoc(userDoc, updateRowData);
+  }
 
   // delete image in datatable 
   const deleteImageRow = async(e)=>{
@@ -153,7 +116,7 @@ function ImageGallery() {
       (snapShot) => {
         let list = [];
         snapShot.docs.forEach((doc) => {
-          list.push({ id: doc.id, image: doc.data().image
+          list.push({ id: doc.id, image: doc.data().image, description: doc.data().description
              });
         });
         setData(list);
@@ -168,6 +131,10 @@ function ImageGallery() {
     };
   }, []);
 
+  const getInfo = desc => {
+    setInfoDialog(true);
+    setInfoText(desc);
+  }
 
   const renderFooter = () => {
     return <div>
@@ -178,21 +145,23 @@ function ImageGallery() {
 
   return (
     <div className='primary-box w-full text-dark dark:text-white h-[100vh] sm:h-auto'>
-        <div className="hidden items-center justify-between md:flex">
+        <div className="items-center justify-between md:flex">
           <h1 className='font-medium text-xl mb-5'>Image Gallery</h1>
-          <button onClick={() => setDialogVisible(true)}>upload</button>
+          <button onClick={() => setDialogVisible(true)} className='hidden md:inline-block btn btn-primary bg-blue-500 hover:bg-blue-600 transition-all disabled:opacity-50 disabled:bg-blue-500'><i className="fas fa-upload"></i> upload</button>
         </div>
+        {/* for mobile view  */}
+        <button className='btn-primary add-btn bg-blue-500 bottom-6 hover:bg-blue-600 transition-all' onClick={() => setDialogVisible(true)}><i className="fas fa-upload"></i></button>
 
         <Dialog header="upload image"
             visible={dialogVisible}
             draggable={false}
             // breakpoints={{'960px': '75vw', '640px': '100vw'}} //not working
-            style={{width: '50vw', overflow: 'hidden'}}
+            // style={{width: '50vw', overflow: 'hidden'}}
             footer={renderFooter('displayBasic')} 
             onHide={() => setDialogVisible(false)}
             dismissableMask={true} 
             >
-              <div className='flex border border-gray border-neutral-600 rounded overflow-hidden relative'>
+              <div className='flex border border-gray border-neutral-600 rounded overflow-hidden relative mb-5'>
                 <div className="absolute left-0 top-0 z-20 w-full">
                   <ProgressBar value={per} style={{ height: '4px', borderRadius: 0 }} color='slate-90'></ProgressBar>
                 </div>
@@ -200,22 +169,46 @@ function ImageGallery() {
                   <i className="fas fa-upload text-5xl text-gray-200 mb-2"></i>
                   Click here to upload image</label>
                 <input type="file" id='imageUpload' className='hidden' accept="image/png, image/gif, image/jpeg" onChange={(e) => setFile(e.target.files[0])} />
-                {console.log(images)}
                 {
                   Object.keys(images).length !== 0 ?  //to check empty object
                   <img src={ images } alt={images} className='w-full sm:w-1/2 h-60 object-cover' />
                   : <i className="far fa-image text-9xl h-full w-full h-60 sm:w-1/2 flex items-center justify-center"></i>
                 }
               </div>
+
+              <Editor style={{ height: '150px' }} placeholder="Enter description(optional)" value={description} onTextChange={(e) => setDescription(e.htmlValue)} />
+
             </Dialog>
 
-            {data.map( (image, i) => {
-              return <div key={i}>
-                        <Image src={image.image} height="200" width="300" preview />
-                        <div><button className='bg-rose-500 py-2 px-4 rounded' onClick={() => deleteImageRow(image)}>Delete</button></div>
-                        {/* <button onClick={() => editImageRow(image.id)}>edit</button> */}
+
+            <Dialog header="Description"
+                            visible={infoDialog}
+                            draggable={false}
+                            style={{width: '50vw', overflow: 'hidden'}}
+                            onHide={() => setInfoDialog(false)}
+                            dismissableMask={true} 
+                            >
+                              { (infoText === '') && <p className='text-center mb-10'>Oops! Description not available</p>
+                              }
+                               <span dangerouslySetInnerHTML={ { __html: infoText } }></span> 
+                            </Dialog>
+
+            <div className='gallery grid-cols-5 lg:grid-cols-4 md:grid-cols-2 sm:grid-cols-1'>
+            {data.map( (data, i) => {
+              return <div key={i} className="gallery-item">
+                          <Image src={data.image} className='gallery-image' preview />
+                          <div className="menu">
+                              <i class="fa-solid fa-ellipsis-vertical menu-btn" aria-haspopup></i>
+
+                              <div className="more-options-menu">
+                                <i className="fas fa-trash-alt bg-rose-500" onClick={() => deleteImageRow(data)}></i>
+                                <i className="fas fa-pen bg-blue-500" onClick={() => editImageRow(data)}></i>
+                                <i className="fas fa-info bg-cyan-500" onClick={() => getInfo(data.description)}></i>
+                              </div>
+                          </div>
                      </div>
             })}
+          </div>
     </div>
   )
 }

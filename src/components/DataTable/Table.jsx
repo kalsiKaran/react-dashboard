@@ -44,12 +44,6 @@ function Table() {
         snapShot.docs.forEach((doc) => {
           list.push({ id: doc.id,
                         ...doc.data().formData,
-                        // symbol: doc.data().formData.symbol,
-                        // tradeType: doc.data().formData.tradeType,
-                        // quantity: doc.data().formData.quantity,
-                        // buyValue: doc.data().formData.buyValue,
-                        // sellValue: doc.data().formData.sellValue,
-                        // date: doc.data().formData.date,
                         image: doc.data().image
              });
         });
