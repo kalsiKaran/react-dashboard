@@ -11,10 +11,10 @@ import { Image } from 'primereact/image';
 import { Dialog } from 'primereact/dialog';
 import { ProgressBar } from 'primereact/progressbar';
 import { Editor } from 'primereact/editor';
-
+import { Skeleton } from 'primereact/skeleton';
 
 function ImageGallery() {
-    
+
   const [dialogVisible, setDialogVisible] = useState(false)
   const [images, setImages] = useState([])
   const [file, setFile] = useState("");
@@ -201,23 +201,34 @@ const onDialogClose = () => {
 
 
             <Dialog header="Description"
-                            visible={infoDialog}
-                            draggable={false}
-                            style={{width: '50vw', overflow: 'hidden'}}
-                            onHide={() => setInfoDialog(false)}
-                            dismissableMask={true} 
-                            >
-                              { (infoText === '') && <p className='text-center mb-10'>Oops! Description not available</p>
-                              }
-                               <span dangerouslySetInnerHTML={ { __html: infoText } }></span> 
-                            </Dialog>
+            visible={infoDialog}
+            draggable={false}
+            onHide={() => setInfoDialog(false)}
+            dismissableMask={true} 
+            >
+              { (infoText === '') && <p className='text-center mb-10'>Oops! Description not available</p>}
+              <span dangerouslySetInnerHTML={ { __html: infoText } }></span>
+            </Dialog>
 
+          <div className='h-[calc(100vh-6rem)] md:h-[calc(100vh-10rem)] overflow-auto'>
             <div className='gallery grid-cols-1 lg:grid-cols-4 md:grid-cols-2 sm:grid-cols-1'>
+              {(data.length == 0) && 
+                <>
+                  <Skeleton shape="square" height="250px" width='95%' className='mb-2' />
+                  <Skeleton shape="square" height="250px" width='95%' className='mb-2' />
+                  <Skeleton shape="square" height="250px" width='95%' className='mb-2' />
+                  <Skeleton shape="square" height="250px" width='95%' className='mb-2' />
+                  <Skeleton shape="square" height="250px" width='95%' className='mb-2' />
+                  <Skeleton shape="square" height="250px" width='95%' className='mb-2' />
+                  <Skeleton shape="square" height="250px" width='95%' className='mb-2' />
+                  <Skeleton shape="square" height="250px" width='95%' className='mb-2' />
+                </>
+              }
             {data.map( (data, i) => {
               return <div key={i} className="gallery-item">
                           <Image src={data.image} className='gallery-image' preview />
                           <div className="menu">
-                              <i class="fa-solid fa-ellipsis-vertical menu-btn" aria-haspopup></i>
+                              <i className="fa-solid fa-ellipsis-vertical menu-btn" aria-haspopup></i>
 
                               <div className="more-options-menu">
                                 <i className="fas fa-trash-alt bg-rose-500" onClick={() => deleteImageRow(data)}></i>
@@ -227,6 +238,7 @@ const onDialogClose = () => {
                           </div>
                      </div>
             })}
+            </div>
           </div>
     </div>
   )

@@ -85,6 +85,12 @@ input,
     }
 }
 
+@media screen and (min-width: 768px){
+    .overflow-unset-md{
+        overflow: unset;
+    }
+}
+
 @media (orientation: portrait) {
     .routes-container{
         padding: 0;

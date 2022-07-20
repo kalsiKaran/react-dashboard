@@ -12,7 +12,7 @@ const DashboardChart = () => {
 
     return (
       
-    <div className='chart'>
+    <div className='mr-0 md:mr-4 chart'>
       <div className='col-span-3 primary-box w-full h-full'>
         <Chart type="line" height='100%' data={basicData} options={basicOptions} />
       </div>
