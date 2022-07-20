@@ -5,19 +5,20 @@
 
     .p-image{
         height: 100%;
+        width: 100%;
+        
         img{
             height: 100%;
+            width: 100%;
             object-fit: cover;
             object-position: center;
         }
     }
     .gallery-item{
         position: relative;
+        height: 250px;
+        max-height: 250px;
         overflow: hidden;
-
-        &:hover .menu-btn{
-            transform: translate(0, 0);
-        }
     }
 
     .menu{
@@ -47,7 +48,6 @@
             top: 10px;
             right: 10px;
             z-index: 999;
-            transform: translate(100px, -100px);
             transition: all 0.5s;
             cursor: pointer;
         

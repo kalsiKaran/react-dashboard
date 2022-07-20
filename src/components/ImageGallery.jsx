@@ -19,7 +19,9 @@ function ImageGallery() {
   const [images, setImages] = useState([])
   const [file, setFile] = useState("");
   const [per, setPerc] = useState(null);
-  const [data, setData] = useState([])
+  const [data, setData] = useState([]);
+  const [editData, setEditData] = useState({});
+  const [status, setStatus] = useState('new');
   const [description, setDescription] = useState('');
   const [infoDialog, setInfoDialog] = useState(false);
   const [infoText, setInfoText] = useState("")
@@ -68,6 +70,7 @@ function ImageGallery() {
 
   // add image row 
   const addRow = async (e) => {
+    setDialogVisible(false)
     if(images.length){
     try {
       await setDoc(doc(usercollection), {
@@ -80,12 +83,22 @@ function ImageGallery() {
     }
   }
     setImages([]);
-    setDescription('Enter description (optional)')
+    setDescription('');
+    setPerc(null);
   }
 
+  // on edit click 
+  const onEditClick = (data) => {
+    setEditData(data)
+    setDialogVisible(true);
+    setStatus('edit');
+    setImages(data.image)
+    setDescription(data.description)
+  }
   // function for updating rowdata 
-  const editImageRow = async(id)=>{
-    const userDoc = doc(db, "images", id);
+  const editImageRow = async()=>{
+    setDialogVisible(false)
+    const userDoc = doc(db, "images", editData.id);
     const updateRowData = {
       description: description,
       image: images,
@@ -106,6 +119,14 @@ function ImageGallery() {
       }).catch((error) => {
         console.error(error);
       });
+}
+
+const onDialogClose = () => {
+  setDialogVisible(false);
+  setImages([]);
+  setDescription();
+  setPerc(null);
+  setStatus('new');
 }
 
 
@@ -138,8 +159,8 @@ function ImageGallery() {
 
   const renderFooter = () => {
     return <div>
-      <button onClick={() => addRow()} disabled={(per < 100) ? true : false} className='btn btn-primary bg-blue-500 hover:bg-blue-600 transition-all disabled:opacity-50 disabled:bg-blue-500'>Upload</button>
-      <button onClick={() => setDialogVisible(false)} className='btn btn-primary bg-rose-700 hover:bg-red-800 transition-all'>Cancel</button>
+      <button onClick={status==='edit' ? () => editImageRow() : () => addRow()} disabled={(per < 100) && status==='new' ? true : false} className='btn btn-primary bg-blue-500 hover:bg-blue-600 transition-all disabled:opacity-50 disabled:bg-blue-500'>{status==='edit' ? 'Update' : 'Upload'}</button>
+      <button onClick={() => onDialogClose()} className='btn btn-primary bg-rose-700 hover:bg-red-800 transition-all'>Cancel</button>
     </div>
   }
 
@@ -150,18 +171,16 @@ function ImageGallery() {
           <button onClick={() => setDialogVisible(true)} className='hidden md:inline-block btn btn-primary bg-blue-500 hover:bg-blue-600 transition-all disabled:opacity-50 disabled:bg-blue-500'><i className="fas fa-upload"></i> upload</button>
         </div>
         {/* for mobile view  */}
-        <button className='btn-primary add-btn bg-blue-500 bottom-6 hover:bg-blue-600 transition-all' onClick={() => setDialogVisible(true)}><i className="fas fa-upload"></i></button>
+        <button className='md:hidden btn-primary add-btn bg-blue-500 bottom-6 hover:bg-blue-600 transition-all' onClick={() => setDialogVisible(true)}><i className="fas fa-upload"></i></button>
 
         <Dialog header="upload image"
             visible={dialogVisible}
             draggable={false}
-            // breakpoints={{'960px': '75vw', '640px': '100vw'}} //not working
-            // style={{width: '50vw', overflow: 'hidden'}}
             footer={renderFooter('displayBasic')} 
             onHide={() => setDialogVisible(false)}
             dismissableMask={true} 
             >
-              <div className='flex border border-gray border-neutral-600 rounded overflow-hidden relative mb-5'>
+              <div className='h-full w-full relative border border-neutral-500 rounded overflow-hidden block sm:flex sm:items-center mb-4'>
                 <div className="absolute left-0 top-0 z-20 w-full">
                   <ProgressBar value={per} style={{ height: '4px', borderRadius: 0 }} color='slate-90'></ProgressBar>
                 </div>
@@ -193,7 +212,7 @@ function ImageGallery() {
                                <span dangerouslySetInnerHTML={ { __html: infoText } }></span> 
                             </Dialog>
 
-            <div className='gallery grid-cols-5 lg:grid-cols-4 md:grid-cols-2 sm:grid-cols-1'>
+            <div className='gallery grid-cols-1 lg:grid-cols-4 md:grid-cols-2 sm:grid-cols-1'>
             {data.map( (data, i) => {
               return <div key={i} className="gallery-item">
                           <Image src={data.image} className='gallery-image' preview />
@@ -202,7 +221,7 @@ function ImageGallery() {
 
                               <div className="more-options-menu">
                                 <i className="fas fa-trash-alt bg-rose-500" onClick={() => deleteImageRow(data)}></i>
-                                <i className="fas fa-pen bg-blue-500" onClick={() => editImageRow(data)}></i>
+                                <i className="fas fa-pen bg-blue-500" onClick={() => onEditClick(data)}></i>
                                 <i className="fas fa-info bg-cyan-500" onClick={() => getInfo(data.description)}></i>
                               </div>
                           </div>
