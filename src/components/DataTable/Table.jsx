@@ -133,7 +133,9 @@ function Table() {
     // table winOrLoss template 
     const winOrLossTemplate = (rowData) => {
         return <span className={`py-1 px-2 rounded text-xs bg-${(parseInt(rowData.sellValue) <= parseInt(rowData.buyValue) ? 'danger' : 'success')}`}>
-          {rowData.quantity * (rowData.sellValue - rowData.buyValue)}
+          {rowData.tradeType.code === 'FX' ?
+          Math.round(((rowData.sellValue - rowData.buyValue) * 1000) * 100)/100 :
+          rowData.quantity * (rowData.sellValue - rowData.buyValue)}
         </span>;
     }
 
