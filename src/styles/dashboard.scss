@@ -13,8 +13,17 @@
         }
 
         .chart{
-            margin-right: 1rem;
             height: calc(100vh - 136px - 60px - 5rem);
+        }
+    }
+}
+
+
+@media (orientation: portrait) {
+    .pandl, .charges, .other-credits{
+        margin-bottom: 1rem;
+        i{
+            font-size: 3rem;
         }
     }
 }

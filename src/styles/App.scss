@@ -40,8 +40,22 @@ input,
     background-color: $gray-800 !important;
 }
 
-.p-dropdown-panel .p-dropdown-items .p-dropdown-item.p-highlight{
-    background-color: rgba($blue, 15%) !important;
+.p-dropdown-panel .p-dropdown-items .p-dropdown-item.p-highlight, .p-datatable .p-datatable-tbody > tr.p-highlight{
+    background-color: rgba($white, 10%) !important;
+}
+
+.p-checkbox .p-checkbox-box.p-highlight{
+    background: $blue !important;
+    border-color: $blue !important;
+}
+
+.p-checkbox .p-checkbox-box.p-highlight .p-checkbox-icon.pi-check:before{
+    top: 8px !important;
+    left: 2px !important;
+}
+
+.p-datatable .p-datatable-tbody > tr.p-highlight{
+    color: unset !important;
 }
 
 .p-float-label input:focus ~ label, .p-float-label .p-inputwrapper-focus ~ label, .p-dropdown-panel .p-dropdown-items .p-dropdown-item.p-highlight{
@@ -68,5 +82,37 @@ input,
     border-radius: 10px;
     &:hover{
         background-color: $gray-600;
+    }
+}
+
+@media screen and (min-width: 768px){
+    .overflow-unset-md{
+        overflow: unset;
+    }
+}
+
+@media (orientation: portrait) {
+    .routes-container{
+        padding: 0;
+    }
+
+    .primary-box{
+        padding: 2rem 1rem;
+        border-radius: 0;
+    }
+
+    td.p-selection-column{
+        display: none !important;
+    }
+
+    .p-dialog{
+        width: 90%;
+    }
+    .toggle-menu{
+        display: block;
+        position: absolute;
+        font-size: 1.5rem;
+        top: 2rem;
+        right: 1rem;
     }
 }

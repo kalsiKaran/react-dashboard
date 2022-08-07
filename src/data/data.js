@@ -15,6 +15,11 @@ export const links = [
         icon: 'fa-solid fa-table',
     },
     {
+        title: 'Image Gallery',
+        name: 'image-gallery',
+        icon: 'fa-solid fa-images',
+    },
+    {
         title: 'Settings',
         name: 'settings',
         icon: 'fa-solid fa-gear',
@@ -23,9 +28,8 @@ export const links = [
 
 
  export const typeOptions = [
-    { name: 'New York', code: 'NY' },
-    { name: 'Rome', code: 'RM' },
-    { name: 'London', code: 'LDN' },
-    { name: 'Istanbul', code: 'IST' },
-    { name: 'Paris', code: 'PRS' }
+    { name: 'Forex', code: 'FX' },
+    { name: 'Stock', code: 'STK' },
+    { name: 'Option', code: 'OPT' },
+    { name: 'Future', code: 'FT' }
 ];

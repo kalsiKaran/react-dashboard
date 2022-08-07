@@ -65,13 +65,13 @@ function NewRow() {
 
   // function for adding new row 
   const addRow = async (e) => {
+    setShowDialog(false);
     try {
       await setDoc(doc(usercollection), {
         formData: e,
         image: image,
         timeStamp: serverTimestamp(),
       });
-      setShowDialog(false);
     } catch (err) {
       console.log(err);
     }
@@ -164,12 +164,12 @@ const getFormErrorMessage = (name) => {
           <Controller name="symbol" control={control} rules={{ required: 'Symbol is required.' }} render={({ field, fieldState }) => (
             <InputText id={field.symbol} value={field.value} onChange={field.onChange} className={`w-full ${classNames({ 'p-invalid': fieldState.error })}`} />
             )} />
-            <label htmlFor="symbol" className={classNames({ 'p-error': errors.symbol })}>Symbol</label>
+            <label htmlFor="symbol" className={classNames({ 'p-error': errors.symbol })}>Name</label>
           </span>
           {getFormErrorMessage('symbol')}
         </div>
 
-        <div className="w-full">
+        <div className="w-full mr-4 mb-4 sm:mb-0">
           <span className="p-float-label">
           <Controller name="tradeType" control={control} rules={{ required: 'Please select trade type.' }} render={({ field, fieldState }) => (
           <Dropdown id={field.tradeType} {...field} value={field.value} options={typeOptions} onChange={(e) => field.onChange(e.value)} optionLabel="name" placeholder="Select Type" className={`w-full ${classNames({ 'p-invalid': fieldState.error })}`} />
@@ -178,42 +178,39 @@ const getFormErrorMessage = (name) => {
           </span>
           {getFormErrorMessage('tradeType')}
         </div>
-      </div>
-
-      <div className="block sm:flex pt-5">
-        <div className="w-full mr-4 mb-4 sm:mb-0">
+        <div className="w-full">
           <span className="p-float-label">
           <Controller name="quantity" control={control} rules={{ required: 'Quantity is required.' }} render={({ field, fieldState }) => (
-            <InputText id={field.quantity} value={field.value} onChange={field.onChange} className={`w-full ${classNames({ 'p-invalid': fieldState.error })}`} />
+            <InputText id={field.quantity} value={field.value} onChange={field.onChange} keyfilter="money" className={`w-full ${classNames({ 'p-invalid': fieldState.error })}`} />
             )} />
             <label htmlFor="quantity" className={classNames({ 'p-error': errors.quantity })}>Quantity</label>
           </span>
           {getFormErrorMessage('quantity')}
         </div>
+      </div>
+
+      <div className="block sm:flex pt-5">
 
         <div className="w-full mr-4 mb-4 sm:mb-0">
           <span className="p-float-label">
             <Controller name="buyValue" control={control} rules={{ required: 'Buy Value is required.' }} render={({ field, fieldState }) => (
-              <InputText id={field.buyValue} value={field.value} onChange={field.onChange} className={`w-full ${classNames({ 'p-invalid': fieldState.error })}`} />
+              <InputText id={field.buyValue} value={field.value} onChange={field.onChange} keyfilter="money" className={`w-full ${classNames({ 'p-invalid': fieldState.error })}`} />
               )} />
               <label htmlFor="buyValue" className={classNames({ 'p-error': errors.buyValue })}>Value1</label>
           </span>
           {getFormErrorMessage('buyValue')}
         </div>
 
-        <div className="w-full">
+        <div className="w-full mr-4 mb-4 sm:mb-0">
           <span className="p-float-label">
           <Controller name="sellValue" control={control} rules={{ required: 'Sell Value is required.' }} render={({ field, fieldState }) => (
-            <InputText id={field.sellValue} value={field.value} onChange={field.onChange} className={`w-full ${classNames({ 'p-invalid': fieldState.error })}`} />
+            <InputText id={field.sellValue} value={field.value} onChange={field.onChange} keyfilter="money" className={`w-full ${classNames({ 'p-invalid': fieldState.error })}`} />
             )} />
             <label htmlFor="sellValue" className={classNames({ 'p-error': errors.sellValue })}>Value 2</label>
           </span>
           {getFormErrorMessage('sellValue')}
         </div>
-      </div>
 
-
-      <div className="block sm:flex pt-5">
         <div className="w-full">
           <span className="p-float-label">
           <Controller name="date" control={control} rules={{ required: 'Date is required.' }} render={({ field, fieldState }) => (

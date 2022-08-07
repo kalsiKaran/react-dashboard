@@ -1,0 +1,103 @@
+@import './variables.scss';
+
+.gallery{
+    display: grid;
+
+    .p-image{
+        height: 100%;
+        width: 100%;
+        
+        img{
+            height: 100%;
+            width: 100%;
+            object-fit: cover;
+            object-position: center;
+        }
+    }
+    .gallery-item{
+        position: relative;
+        height: 250px;
+        max-height: 250px;
+        overflow: hidden;
+    }
+
+    .menu{
+        position: absolute;
+        top: 0;
+        right: 0;
+        &:hover .more-options-menu{
+            i:nth-child(1){
+                right: 60px;
+                top: 5px;
+                transform: scale(1);
+            }
+            i:nth-child(2){
+                right: 40px;
+                top: 40px;
+                transform: scale(1);
+            }
+            i:nth-child(3){
+                right: 5px;
+                top: 60px;
+                transform: scale(1);
+            }
+        }
+
+        .menu-btn{
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            z-index: 9;
+            transition: all 0.5s;
+            cursor: pointer;
+        
+            &::after{
+                content: '';
+                position: absolute;
+                background-color: rgba($color: $gray-900, $alpha: 0.7);
+                height: 100px;
+                width: 100px;
+                border-radius: 50%;
+                right: -60px;
+                top: -60px;
+                z-index: -1;
+            }
+        }
+    
+        .more-options-menu{
+            position: absolute;
+            right: 0;
+            top: 0;
+
+            i{
+                cursor: pointer;
+                position: absolute;
+                font-size: 0.7rem;
+                height: 32px;
+                width: 32px;
+                border-radius: 50%;
+                right: 0;
+                top: 0;
+                transform: scale(0);
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                transition: all 0.5s;
+                &:nth-child(2){
+                    transition-delay: 0.1s;
+                }
+                &:nth-child(2){
+                    transition-delay: 0.3s;
+                }
+                &:nth-child(3){
+                    transition-delay: 0.6s;
+                }
+            }
+        }
+    }
+
+}
+
+.ql-editor.ql-blank::before{
+    color: rgba($color: $white, $alpha: 0.7) !important;
+}
