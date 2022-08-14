@@ -135,7 +135,10 @@ function Table() {
         return <span className={`py-1 px-2 rounded text-xs bg-${(parseInt(rowData.sellValue) <= parseInt(rowData.buyValue) ? 'danger' : 'success')}`}>
           {rowData.tradeType.code === 'FX' ?
           Math.round(((rowData.sellValue - rowData.buyValue) * 1000) * 100)/100 :
-          rowData.quantity * (rowData.sellValue - rowData.buyValue)}
+          rowData.tradeType.code === 'CT' ? 
+            rowData.quantity * (rowData.sellValue - rowData.buyValue) + 10 :
+            rowData.quantity * (rowData.sellValue - rowData.buyValue)
+          }
         </span>;
     }
 
@@ -191,8 +194,8 @@ function Table() {
             <i className="pi pi-search" />
             <InputText value={globalFilterValue} onChange={onGlobalFilterChange} placeholder="Search" className='p-inputtext-sm w-full h-full !py-2' />
           </span>
-          {(selectedRows.length !== 0) && <button className='btn-primary delete-btn bg-rose-500 bottom-20 hover:bg-rose-600 transition-all' onClick={() => deleteMultipleRows()}><i className="fas fa-trash-can"></i></button>}
-          <button className='btn-primary add-btn bg-blue-500 bottom-6 hover:bg-blue-600 transition-all' onClick={() => addNew()}><i className="fas fa-add"></i></button>
+          {(selectedRows.length !== 0) && <button className='btn-primary delete-btn bg-rose-500 bottom-36 hover:bg-rose-600 transition-all' onClick={() => deleteMultipleRows()}><i className="fas fa-trash-can"></i></button>}
+          <button className='btn-primary add-btn bg-blue-500 bottom-20 hover:bg-blue-600 transition-all' onClick={() => addNew()}><i className="fas fa-add"></i></button>
         </div>
 
         {/* dialog for add new row */}
@@ -206,7 +209,7 @@ function Table() {
             <DataTable value={data} rowClassName='table-row'
              responsiveLayout="stack"
              breakpoint="1080px"
-             scrollHeight="calc(100vh - 11rem)"
+             scrollHeight="calc(100vh - 13rem)"
              dataKey="id"
              filters={filters}
              selection={selectedRows}

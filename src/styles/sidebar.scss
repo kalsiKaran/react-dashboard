@@ -1,3 +1,5 @@
+@import '~tailwindcss/utilities';
+
 .sidebar{
     height: calc(100vh - 4rem);
     margin-right: 2rem;
@@ -14,7 +16,7 @@
             a{
                 display: block;
                 width: 100%;
-                opacity: 0.7;
+                opacity: 0.6;
                 border-right: 5px solid transparent;
                 padding: 0.5rem 0;
                 cursor: pointer;
@@ -45,24 +47,41 @@
 
 @media (orientation: portrait) {
     .sidebar{
-        position: absolute;
-        width: 80%;
+        position: fixed;
+        width: 100%;
         z-index: 10;
-        top: 1.5rem;
-        right: 0.5rem;
+        bottom: 0;
+        left: 0;
         height: auto;
         margin-right: 0;
 
         ul{
             height: 100%;
             width: 100%;
+            flex-direction: row;
+            padding: 0.4rem;
 
             li{
-                text-align: left;
-                margin-top: 1rem;
+                text-align: center;
                 margin-bottom: 0;
                 a{
-                    padding: 1rem 0.5rem 1rem 2rem !important;
+                    padding: 0 !important;
+                    font-size: 1.4rem;
+                    i{
+                        padding: 1rem;
+                        border-radius: 50%;
+                        display: grid;
+                        place-content: center;
+                        transition: all 0.5s;
+                    }
+                    &.active{
+                        background-color: transparent !important;
+                        box-shadow: unset !important;
+                        i{
+                            background-color: $zinc-800;
+                            transform: translateY(-5px);
+                        }
+                    }
 
                     span{
                         letter-spacing: 3px;

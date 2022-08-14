@@ -29,7 +29,7 @@ function App() {
       <BrowserRouter>
       <div className="App">
         <div className='flex routes-container'>
-        <div className={`toggle-menu hidden text-white dark:text-dark z-20 fas ${activeMenu ? 'fa-close' : 'fa-bars'}`} onClick={() => setActiveMenu(!activeMenu)}></div>
+        {/* <div className={`toggle-menu hidden text-white dark:text-dark z-20 fas ${activeMenu ? 'fa-close' : 'fa-bars'}`} onClick={() => setActiveMenu(!activeMenu)}></div> */}
         <Sidebar />
         <Routes>
           <Route path="/" element={<Navigate to="/data-table" />} />

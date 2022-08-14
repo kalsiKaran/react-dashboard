@@ -31,5 +31,6 @@ export const links = [
     { name: 'Forex', code: 'FX' },
     { name: 'Stock', code: 'STK' },
     { name: 'Option', code: 'OPT' },
-    { name: 'Future', code: 'FT' }
+    { name: 'Future', code: 'FT' },
+    { name: 'Crypto', code: 'CT' }
 ];

@@ -32,12 +32,13 @@ function  Sidebar () {
       </div>
 
         {/* for mobile view */}
-        <div className={`sidebar flex md:hidden origin-top-right transition-transform duration-300 ${activeMenu ? 'scale-100' : 'scale-0'}`}>
-        <ul className="text-white uppercase flex md:hidden items-center flex-col h-full w-[5rem] primary-box !rounded-xl">
+        <div className="sidebar flex md:hidden">
+        <ul className="text-white uppercase flex md:hidden items-center flex-col h-full primary-box">
           {links.map((link)=>{
             return <li className='link' key={link.name}>
               <NavLink to={`/${link.name}`} onClick={() => setActiveMenu(!activeMenu)} className={({ isActive }) => (isActive ? 'active' : '')}>
-                <i className={`mr-2 ${link.icon}`}></i> <span>{link.title}</span>
+                <i className={`${link.icon} transition-all`}></i> 
+                {/* <span>{link.title}</span> */}
               </NavLink>
             </li>
           })}

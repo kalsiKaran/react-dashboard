@@ -171,7 +171,7 @@ const onDialogClose = () => {
           <button onClick={() => setDialogVisible(true)} className='hidden md:inline-block btn btn-primary bg-blue-500 hover:bg-blue-600 transition-all disabled:opacity-50 disabled:bg-blue-500'><i className="fas fa-upload"></i> upload</button>
         </div>
         {/* for mobile view  */}
-        <button className='md:hidden btn-primary add-btn bg-blue-500 bottom-6 hover:bg-blue-600 transition-all' onClick={() => setDialogVisible(true)}><i className="fas fa-upload"></i></button>
+        <button className='md:hidden btn-primary add-btn bg-blue-500 bottom-20 hover:bg-blue-600 transition-all' onClick={() => setDialogVisible(true)}><i className="fas fa-upload"></i></button>
 
         <Dialog header="upload image"
             visible={dialogVisible}
@@ -210,7 +210,7 @@ const onDialogClose = () => {
               <span dangerouslySetInnerHTML={ { __html: infoText } }></span>
             </Dialog>
 
-          <div className='h-[calc(100vh-6rem)] md:h-[calc(100vh-10rem)] overflow-auto'>
+          <div className='h-[calc(100vh-10rem)] md:h-[calc(100vh-10rem)] overflow-auto'>
             <div className='gallery grid-cols-1 lg:grid-cols-4 md:grid-cols-2 sm:grid-cols-1'>
               {(data.length == 0) && 
                 <>
