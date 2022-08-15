@@ -46,12 +46,12 @@ export const getDarkTheme = () => {
 }
 
 
-export const pieChartLabels =[ 'A', 'B', 'C' ]
+export const pieChartLabels =[ 'Profit', 'Loss' ]
 
 export const pieChartDatasets = [
     {
         label: 'My First dataset',
-        backgroundColor: ["#42A5F5", "#66BB6A", "#FFA726"],
-        data: [20, 60, 30],
+        backgroundColor: ["#66BB6A", "#dc3545"],
+        data: [0, 100],
     },
 ]

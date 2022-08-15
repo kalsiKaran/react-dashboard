@@ -135,9 +135,7 @@ function Table() {
         return <span className={`py-1 px-2 rounded text-xs bg-${(parseInt(rowData.sellValue) <= parseInt(rowData.buyValue) ? 'danger' : 'success')}`}>
           {rowData.tradeType.code === 'FX' ?
           Math.round(((rowData.sellValue - rowData.buyValue) * 1000) * 100)/100 :
-          rowData.tradeType.code === 'CT' ? 
-            rowData.quantity * (rowData.sellValue - rowData.buyValue) + 10 :
-            rowData.quantity * (rowData.sellValue - rowData.buyValue)
+            parseFloat(rowData.quantity * (rowData.sellValue - rowData.buyValue)).toFixed(2)
           }
         </span>;
     }
@@ -170,7 +168,7 @@ function Table() {
   
 
   return (
-    <div className='primary-box w-full text-dark dark:text-white h-[100vh] sm:h-auto'>
+    <div className='primary-box w-full text-dark dark:text-white h-screen sm:h-auto'>
         <div className="hidden items-center justify-between md:flex">
             <h1 className='font-medium text-xl'>Table</h1>
             <div className='h-[2.5rem]'>
@@ -219,12 +217,12 @@ function Table() {
              onContextMenuSelectionChange={e => setSelectedDataRow(e.value)}
              onContextMenu={e => cm.current.show(e.originalEvent)} >
                 <Column selectionMode="multiple" headerStyle={{width: '3em'}}></Column>
-                <Column field="symbol" header="Name" sortable/>
+                <Column field="symbol" header="Symbol" sortable/>
                 <Column field="tradeType" header="Type" body={typeTemplate} sortable/>
                 <Column field="quantity" header="Quantity" sortable/>
-                <Column field="buyValue" header="value1" sortable/>
-                <Column field="sellValue" header="value2" sortable/>
-                <Column field="winOrLoss" header="Total" body={winOrLossTemplate} sortable/>
+                <Column field="buyValue" header="Buy Value" sortable/>
+                <Column field="sellValue" header="Sell Value" sortable/>
+                <Column field="winOrLoss" header="P & L" body={winOrLossTemplate} sortable/>
                 <Column field="date" header="Date" dataType="date" body={e => dateBodyTemplate(e.date)} sortable/>
                 <Column field="image" header="Image" body={imageBodyTemplate} />
             </DataTable>

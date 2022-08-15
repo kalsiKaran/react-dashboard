@@ -196,7 +196,7 @@ const getFormErrorMessage = (name) => {
             <Controller name="buyValue" control={control} rules={{ required: 'Buy Value is required.' }} render={({ field, fieldState }) => (
               <InputText id={field.buyValue} value={field.value} onChange={field.onChange} keyfilter="money" className={`w-full ${classNames({ 'p-invalid': fieldState.error })}`} />
               )} />
-              <label htmlFor="buyValue" className={classNames({ 'p-error': errors.buyValue })}>Value1</label>
+              <label htmlFor="buyValue" className={classNames({ 'p-error': errors.buyValue })}>Buy Value</label>
           </span>
           {getFormErrorMessage('buyValue')}
         </div>
@@ -206,7 +206,7 @@ const getFormErrorMessage = (name) => {
           <Controller name="sellValue" control={control} rules={{ required: 'Sell Value is required.' }} render={({ field, fieldState }) => (
             <InputText id={field.sellValue} value={field.value} onChange={field.onChange} keyfilter="money" className={`w-full ${classNames({ 'p-invalid': fieldState.error })}`} />
             )} />
-            <label htmlFor="sellValue" className={classNames({ 'p-error': errors.sellValue })}>Value 2</label>
+            <label htmlFor="sellValue" className={classNames({ 'p-error': errors.sellValue })}>Sell Value</label>
           </span>
           {getFormErrorMessage('sellValue')}
         </div>
