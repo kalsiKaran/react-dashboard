@@ -131,6 +131,8 @@ const onDialogClose = () => {
 
 
   useEffect(() => {
+    document.title = 'KT | Image Gallery '
+
     // LISTEN (REALTIME)
     const unsub = onSnapshot(
       usercollection,

@@ -1,8 +1,13 @@
 import React, { useState } from 'react';
 import { Chart } from 'primereact/chart';
 import * as chartData from '../../data/chart'
+import { useEffect } from 'react';
 
 const Charts = () => {
+    useEffect(() => {
+      document.title = 'KT | Charts '
+    }, [])
+    
     const [basicData] = useState({
         labels: chartData.basicLabels,
         datasets: chartData.basicDatasets

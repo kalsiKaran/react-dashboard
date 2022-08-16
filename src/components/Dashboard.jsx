@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import '../styles/dashboard.scss'
 import Navbar from './Navbar';
 import TotalPandL from './TotalPandL';
@@ -9,6 +9,10 @@ import RecentTrades from './RecentTrades';
 import DashboardChart from './DashboardChart';
 
 function Dashboard() {
+  useEffect(() => {
+    document.title = 'KT | Dashboard '
+  }, [])
+
   return (
     <section className='dashboard text-white h-screen md:h-full w-full'>
       <Navbar />

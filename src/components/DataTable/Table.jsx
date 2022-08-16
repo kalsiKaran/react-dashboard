@@ -36,6 +36,7 @@ function Table() {
 
     // get data from firebase
     useEffect(() => {
+      document.title = 'KT | Data Table'
     // LISTEN (REALTIME)
     const unsub = onSnapshot(
       usercollection,
@@ -132,7 +133,7 @@ function Table() {
 
     // table winOrLoss template 
     const winOrLossTemplate = (rowData) => {
-        return <span className={`py-1 px-2 rounded text-xs bg-${(parseInt(rowData.sellValue) <= parseInt(rowData.buyValue) ? 'danger' : 'success')}`}>
+        return <span className={`py-1 px-2 rounded text-xs bg-${rowData.sellValue <= rowData.buyValue ? 'danger' : 'success'}`}>
           {rowData.tradeType.code === 'FX' ?
           Math.round(((rowData.sellValue - rowData.buyValue) * 1000) * 100)/100 :
             parseFloat(rowData.quantity * (rowData.sellValue - rowData.buyValue)).toFixed(2)
