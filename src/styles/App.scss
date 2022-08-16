@@ -1,5 +1,11 @@
 @import './variables.scss';
 
+.brand-icon{
+    height: 100%;
+    width: 32px;
+    display: inline-block;
+}
+
 @mixin btn(){
     border-radius: 4px;
     padding: 0.2rem 0.6rem;

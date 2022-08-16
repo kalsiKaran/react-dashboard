@@ -3,6 +3,7 @@ export const links = [
         title: 'Dashboard',
         name: 'dashboard',
         icon: 'fas fa-home',
+        img: 'icon_white'
     },
     {
         title: 'Charts',
